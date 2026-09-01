@@ -26,6 +26,7 @@
 ## Task 1: Host and Repository Bootstrap
 
 **Files:**
+
 - Create: `package.json`, `tsconfig.json`, `pnpm-workspace.yaml`, `.gitignore`
 - Create: `packages/core/src/index.ts`
 - Test: `tests/bootstrap.test.ts`
@@ -40,6 +41,7 @@ Acceptance: a clean checkout installs dependencies and runs one host-side test w
 ## Task 2: Generic Domain Contracts
 
 **Files:**
+
 - Create: `packages/core/src/contracts/device-driver.ts`
 - Create: `packages/core/src/contracts/game-adapter.ts`
 - Create: `packages/core/src/contracts/flow.ts`
@@ -56,6 +58,7 @@ Acceptance: the core contracts contain no Idle_Outpost package name, UI path, Ex
 ## Task 3: ADB Device Backend
 
 **Files:**
+
 - Create: `packages/adb-driver/src/adb-client.ts`
 - Create: `packages/adb-driver/src/adb-device-driver.ts`
 - Create: `packages/adb-driver/src/device-parser.ts`
@@ -73,6 +76,7 @@ Acceptance: the driver can run `adb devices -l` and return a typed device record
 ## Task 4: Artifact Engine
 
 **Files:**
+
 - Create: `packages/artifact-engine/src/artifact-inspector.ts`
 - Create: `packages/artifact-engine/src/bundletool-runner.ts`
 - Create: `packages/artifact-engine/src/artifact-policy.ts`
@@ -90,6 +94,7 @@ Acceptance: a supplied APKS can be verified against a device specification witho
 ## Task 5: Flow Engine and Route Schema
 
 **Files:**
+
 - Create: `schemas/route.schema.json`
 - Create: `packages/core/src/flow/route-loader.ts`
 - Create: `packages/core/src/flow/flow-runner.ts`
@@ -108,6 +113,7 @@ Acceptance: a fake adapter and fake device can execute a route and produce deter
 ## Task 6: Reports and CLI
 
 **Files:**
+
 - Create: `packages/report-engine/src/json-report.ts`
 - Create: `packages/report-engine/src/junit-report.ts`
 - Create: `cli/src/main.ts`
@@ -126,6 +132,7 @@ Acceptance: a host-only fake route returns a JUnit report and a stable nonzero e
 ## Task 7: Idle_Outpost Adapter
 
 **Files:**
+
 - Create: `adapters/idle-outpost/adapter.yaml`
 - Create: `adapters/idle-outpost/src/idle-outpost-adapter.ts`
 - Create: `adapters/idle-outpost/src/config-reader.ts`
@@ -145,6 +152,7 @@ Acceptance: core loads the adapter without importing Idle_Outpost code into `pac
 ## Task 8: First Real-Device Route
 
 **Files:**
+
 - Modify: `adapters/idle-outpost/routes/first-upgrade.yaml`
 - Create: `tests/device/idle-outpost-first-upgrade.device.yaml`
 - Modify: `docs/architecture/real-device-run.md`
@@ -161,6 +169,7 @@ Acceptance: one real player route reaches its intended result and produces a mac
 ## Task 9: Optional Appium Backend
 
 **Files:**
+
 - Create: `packages/appium-driver/src/appium-device-driver.ts`
 - Create: `packages/appium-driver/src/capability-probe.ts`
 - Test: `tests/appium-driver.test.ts`
@@ -177,6 +186,7 @@ Acceptance: Appium improves native-dialog handling without changing the route fo
 ## Task 10: Interactive Architecture Browser
 
 **Files:**
+
 - Create: `docs/architecture/index.html`
 - Create: `docs/architecture/architecture-data.json`
 - Create: `docs/architecture/README.md`
@@ -192,6 +202,7 @@ Acceptance: a reader can select a core module or adapter and see its responsibil
 ## Task 11: Second-Game Generality Proof
 
 **Files:**
+
 - Create: `adapters/sample-native-game/`
 - Create: `tests/adapters/sample-native-game.test.ts`
 - Modify: `README.md`
@@ -206,6 +217,7 @@ Acceptance: a second adapter can be added without changing generic device, flow,
 ## Task 12: Multi-Device and Release Readiness
 
 **Files:**
+
 - Create: `devices/device-matrix.yaml`
 - Create: `docs/runbooks/device-matrix.md`
 - Create: `.github/workflows/host-tests.yml`
