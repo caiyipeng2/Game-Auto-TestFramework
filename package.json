@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc --outDir dist",
     "test": "node --import=tsx --test \"tests/**/*.test.ts\"",
+    "cli": "tsx cli/src/main.ts",
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit"

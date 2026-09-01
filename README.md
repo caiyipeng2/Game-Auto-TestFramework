@@ -65,8 +65,22 @@ first real player route.
 game-auto-test doctor
 game-auto-test artifact verify --adapter idle-outpost
 game-auto-test device inspect --serial <serial>
-game-auto-test run --adapter idle-outpost --route first-upgrade
+game-auto-test run --adapter idle-outpost --route <route-file> --artifact <apk-or-apks> --serial <serial>
 ```
+
+The current TypeScript entry point is `cli/src/main.ts`. On Windows, the
+PowerShell wrapper forwards all arguments and preserves the CLI exit code:
+
+```powershell
+.\Tools\Invoke-GameAutoTest.ps1 run --adapter fake-game --route .\route.yaml --artifact .\game.apk --serial <serial>
+```
+
+Reports are written below `<output-dir>/<run-id>/<serial>/`. A route run emits
+`run.json`, `junit.xml`, and an `evidence/` directory. The stable exit codes
+are `0` for PASS, `1` for a controlled test failure, `2` for a blocked
+prerequisite, `3` for invalid arguments or configuration, and `10` for an
+unexpected host-tool failure. JSON report fields whose names contain tokens,
+secrets, passwords, credentials, or signing keys are redacted.
 
 ## Documentation
 
