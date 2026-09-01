@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: control-flow
+adapter: fake-game
+steps:
+  - id: enter
+    launch: {}
+  - id: swipe-list
+    swipe:
+      start: { x: 100, y: 200 }
+      end: { x: 100, y: 600 }
+      durationMs: 300
+  - id: type-name
+    input:
+      text: test-name
+  - id: repeat-tap
+    repeat:
+      times: 2
+      steps:
+        - id: repeated-tap
+          tap:
+            target: terrain.upgrade.entry
+  - id: choose-branch
+    branch:
+      condition:
+        state: gameplay
+      then:
+        - id: collect-log
+          collectLogcat:
+            name: branch.logcat.txt
+      else:
+        - id: clear-data
+          clearData: {}

@@ -27,6 +27,7 @@ export interface WaitStep extends RouteStepBase {
   readonly type: "wait";
   readonly state: string;
   readonly timeoutMs: number;
+  readonly pollIntervalMs?: number;
 }
 
 export interface AssertStep extends RouteStepBase {

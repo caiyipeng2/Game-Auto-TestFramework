@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: first-upgrade
+adapter: fake-game
+profile: test
+preconditions:
+  - context: clean-data
+steps:
+  - id: wait-main
+    wait:
+      state: main-screen
+      timeoutMs: 100
+      pollIntervalMs: 1
+  - id: open-upgrade
+    tap:
+      target: terrain.upgrade.entry
+  - id: verify-upgrade
+    assert:
+      state: gameplay
+      field: upgradeOwned
+      equals: true
+  - id: capture-result
+    screenshot:
+      name: after-first-upgrade
