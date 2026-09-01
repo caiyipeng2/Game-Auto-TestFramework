@@ -4,3 +4,8 @@
  * can declare the contract they require.
  */
 export const FRAMEWORK_CONTRACT_VERSION = "1.0";
+
+export * from "./contracts/device-driver.js";
+export * from "./contracts/evidence.js";
+export * from "./contracts/flow.js";
+export * from "./contracts/game-adapter.js";
