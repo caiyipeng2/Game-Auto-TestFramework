@@ -1,0 +1,1 @@
+NetworkAgentInfo{network{100} ni{WIFI CONNECTED} Capabilities: INTERNET&VALIDATED&NOT_VPN}

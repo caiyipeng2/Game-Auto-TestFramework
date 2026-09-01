@@ -1,0 +1,2 @@
+Filesystem       1024-blocks      Used Available Capacity Mounted on
+/dev/block/dm-65     484442112 42991616 441450496       9% /data/user/0

@@ -1,0 +1,2 @@
+List of devices attached
+R5CX211TXNT            device product:e3qzcx model:SM-S9280 device:e3q transport_id:1

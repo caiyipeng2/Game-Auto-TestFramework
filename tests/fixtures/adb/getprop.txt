@@ -1,0 +1,5 @@
+[ro.product.model]: [SM-S9280]
+[ro.product.manufacturer]: [samsung]
+[ro.build.version.release]: [16]
+[ro.build.version.sdk]: [36]
+[ro.product.cpu.abilist]: [arm64-v8a]
