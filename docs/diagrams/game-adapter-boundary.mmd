@@ -1,0 +1,16 @@
+flowchart TB
+    Adapter[GameAdapter]
+    Adapter --> Identity[identity]
+    Adapter --> Profiles[profiles]
+    Adapter --> Prepare[prepareContext]
+    Adapter --> Ready[waitReady]
+    Adapter --> Target[resolveTarget]
+    Adapter --> State[readState]
+    Adapter --> Assert[assertState]
+    Adapter --> Cleanup[cleanupContext]
+    Package[adapters/<game-name>] --> Adapter
+    Package --> Yaml[adapter.yaml]
+    Package --> Config[config]
+    Package --> Src[src]
+    Package --> Routes[routes]
+    Package --> Docs[docs]

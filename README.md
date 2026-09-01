@@ -87,6 +87,12 @@ secrets, passwords, credentials, or signing keys are redacted.
 - [Architecture Design](docs/design/architecture.md)
 - [Flow DSL Design](docs/design/flow-dsl.md)
 - [Architecture Diagram](docs/diagrams/architecture.mmd)
+- [Architecture Documentation Index](docs/architecture/README.md)
+- [Overall Architecture](docs/architecture/overall.md)
+- [Project Structure](docs/architecture/project-structure.md)
+- [Configuration Parsing Strategy](docs/architecture/config-parsing-strategy.md)
+- [Game Adapter Contract](docs/architecture/game-adapter.md)
+- [Idle_Outpost First Route](docs/architecture/idle-outpost-first-route.md)
 
 The interactive architecture browser is a later documentation-surface task;
 it must remain separate from the execution core.

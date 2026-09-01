@@ -1,0 +1,38 @@
+schemaVersion: 1
+id: first-upgrade
+adapter: idle-outpost
+profile: test-server-v63
+preconditions:
+  - context: existing-data
+  - context: logged-in
+steps:
+  - id: wait-app-ready
+    wait:
+      state: app-ready
+      timeoutMs: 120000
+  - id: wait-main-screen
+    wait:
+      state: main-screen
+      timeoutMs: 30000
+  - id: open-terrain-upgrades
+    tap:
+      target: main.terrain.upgrade.entry
+  - id: wait-upgrade-window
+    wait:
+      state: terrain-upgrade-window
+      timeoutMs: 30000
+  - id: wait-first-upgrade-affordable
+    wait:
+      state: first-upgrade-affordable
+      timeoutMs: 120000
+  - id: buy-first-upgrade
+    tap:
+      target: terrain.upgrade.first
+  - id: verify-first-upgrade
+    assert:
+      state: terrain-upgrade-owned
+      field: upgradeOwned
+      equals: true
+  - id: capture-first-upgrade
+    screenshot:
+      name: after-first-upgrade

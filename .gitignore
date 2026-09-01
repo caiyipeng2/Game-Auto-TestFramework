@@ -3,4 +3,5 @@ dist/
 coverage/
 .cache/
 reports/
+.codegraph/
 *.log

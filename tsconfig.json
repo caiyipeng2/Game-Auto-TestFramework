@@ -11,5 +11,10 @@
     "declaration": true,
     "outDir": "dist"
   },
-  "include": ["packages/**/*.ts", "tests/**/*.ts", "cli/**/*.ts"]
+  "include": [
+    "packages/**/*.ts",
+    "adapters/**/*.ts",
+    "tests/**/*.ts",
+    "cli/**/*.ts"
+  ]
 }

@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: idle-outpost
+displayName: Idle Outpost
+adapterVersion: 0.1.0
+contractVersion: "1.0"
+identity:
+  id: idle-outpost
+  displayName: Idle Outpost
+  packageId: com.hg.idleweaponshoptycoon.android
+  launchActivity: com.unity3d.player.UnityPlayerActivity
+profiles:
+  - id: test-server-v63
+    environment: test-server
+    settings:
+      buildVersion: 63
+      versionName: 2.0.9
+      artifactKind: apks
+      artifactFile: idle_weaponshop_haiwai_v63_2026_08_28_18_45-release.apks
+      artifactSelectionPolicy: earlier timestamp in the v63 artifact set
+      artifactSha256: 4CD024482C8AD55406E73E1CC05DF15C892B06AB6079DCBBBB92EC4F90A56300
+locatorTemplates:
+  main.terrain.upgrade.entry:
+    path: locators/main-terrain-upgrade-entry.png
+    threshold: 0.86
+  terrain.upgrade.first:
+    path: locators/terrain-upgrade-first.png
+    threshold: 0.86
+configSources:
+  - path: Excel/X系统开放表_Data_SystemStatus.xlsx
+    sheet: Data_SystemStatus
+    purpose: system unlock conditions
+  - path: Excel/S沙盘表_Data_Terrain.xls
+    sheet: Data_TerrainCfg
+    purpose: terrain identity and starting economy
+  - path: Excel/S沙盘升级表.xls
+    sheet: Data_TerrainUpgrade
+    purpose: terrain upgrade costs and effects
+  - path: Excel/Y引导表_Data_Guide.xlsx
+    sheet: Data_Guide
+    purpose: guided player target paths and completion conditions

@@ -1,0 +1,10 @@
+flowchart LR
+    Preconditions[existing data + logged in]
+    Preconditions --> Ready[app-ready]
+    Ready --> Main[main-screen]
+    Main --> Entry[tap main.terrain.upgrade.entry]
+    Entry --> Window[terrain-upgrade-window]
+    Window --> Affordable[wait first-upgrade-affordable]
+    Affordable --> First[tap terrain.upgrade.first]
+    First --> Owned[assert terrain-upgrade-owned]
+    Owned --> Evidence[after-first-upgrade screenshot]

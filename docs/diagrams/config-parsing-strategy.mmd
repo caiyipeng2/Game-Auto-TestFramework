@@ -1,0 +1,12 @@
+flowchart LR
+    Excel[Idle_Outpost Excel tables] --> Extract[Read-only extraction]
+    Extract --> Snapshot[Versioned adapter JSON snapshot]
+    Manifest[adapter.yaml] --> Reader[IdleOutpostConfigReader]
+    Snapshot --> Reader
+    Reader --> Facts[Verified route facts]
+    Facts --> Route[Logical route]
+    Facts --> State[Runtime state reader]
+    Facts --> Assert[Business assertions]
+    Route --> Flow[Generic Flow Engine]
+    State --> Flow
+    Assert --> Flow
