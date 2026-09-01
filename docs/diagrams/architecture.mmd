@@ -1,0 +1,19 @@
+flowchart LR
+    User[Tester or CI] --> CLI[Framework CLI]
+    CLI --> Artifact[Artifact Engine]
+    CLI --> Device[Device Core]
+    CLI --> Flow[Flow Engine]
+    Artifact --> APK[APK AAB APKS]
+    Device --> ADB[ADB Driver]
+    Device -. optional .-> Appium[Appium Driver]
+    ADB --> Phone[Android Device]
+    Appium --> Phone
+    Flow --> Adapter[Game Adapter]
+    Adapter --> Config[Config Reader]
+    Adapter --> Routes[Route Definitions]
+    Adapter --> Locator[Locator Resolver]
+    Adapter --> Oracle[State and Business Assertions]
+    Flow --> Evidence[Evidence Collector]
+    Device --> Evidence
+    Artifact --> Evidence
+    Evidence --> Reports[JSON JUnit Logs Screenshots Performance]

@@ -1,0 +1,78 @@
+# Game Auto Test Framework
+
+面向 Android 真机游戏的通用自动化测试框架。
+
+框架把设备控制、包体生命周期、流程执行、定位后端、证据采集和报告输出放在通用核心；每个游戏只提供独立的 Adapter、配置解析器和真实游玩流程。
+
+## 设计目标
+
+- 支持 APK、AAB 和 APKS 的验证与真机安装。
+- 以 ADB 作为所有 Android 设备的基础控制通道。
+- 以 Appium UiAutomator2 作为可选的原生 Android UI 后端。
+- 支持 Unity、原生 Android、WebView 和其他游戏技术栈的适配包。
+- 让真实用户操作流程可以使用配置、状态和语义定位驱动，而不是依赖固定坐标。
+- 为每一步保留截图、logcat、设备信息、性能信息和失败原因。
+- 通用核心与具体游戏解耦，游戏适配包可以独立版本化。
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[测试人员 / CI] --> CLI[Framework CLI]
+    CLI --> FLOW[Flow Engine]
+    CLI --> ART[Artifact Engine]
+    CLI --> DEV[Device Core]
+    FLOW --> APP[Game Adapter]
+    FLOW --> LOC[Locator Resolver]
+    DEV --> ADB[ADB Driver]
+    DEV --> APPIUM[Optional Appium Driver]
+    APP --> CONFIG[Game Config Reader]
+    APP --> STATE[Game State Reader]
+    APP --> ROUTE[Game Route Definitions]
+    ADB --> DEVICE[Android Real Device]
+    APPIUM --> DEVICE
+    FLOW --> EVIDENCE[Evidence Collector]
+    ART --> EVIDENCE
+    DEV --> EVIDENCE
+    EVIDENCE --> REPORT[JSON / JUnit / Screenshots / Logs]
+```
+
+## Repository Layout
+
+```text
+packages/core/                 Generic flow and lifecycle contracts
+packages/adb-driver/           ADB process and device implementation
+packages/appium-driver/        Optional UiAutomator2 implementation
+packages/artifact-engine/      APK/AAB/APKS verification
+packages/report-engine/        JSON/JUnit/evidence reports
+adapters/idle-outpost/         First game adapter
+adapters/<game-name>/          Future game adapters
+schemas/                       Versioned route and adapter schemas
+docs/design/                   Design and architecture explanation
+docs/diagrams/                 Mermaid source diagrams
+```
+
+## First Adapter
+
+Idle_Outpost is the first adapter and is not part of the generic core. Its
+responsibilities include TestServer selection, Excel/runtime configuration
+mapping, Unity Canvas locator support, account/archive preparation, and the
+first real player route.
+
+## Planned Commands
+
+```text
+game-auto-test doctor
+game-auto-test artifact verify --adapter idle-outpost
+game-auto-test device inspect --serial <serial>
+game-auto-test run --adapter idle-outpost --route first-upgrade
+```
+
+## Documentation
+
+- [Architecture Design](docs/design/architecture.md)
+- [Flow DSL Design](docs/design/flow-dsl.md)
+- [Architecture Diagram](docs/diagrams/architecture.mmd)
+
+The interactive architecture browser is a later documentation-surface task;
+it must remain separate from the execution core.
