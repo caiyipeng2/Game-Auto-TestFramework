@@ -16,6 +16,7 @@ directly. The editable diagram sources are also kept in `docs/diagrams/`.
 - [Idle_Outpost first route](idle-outpost-first-route.md): the real configuration-backed route used for the first proof.
 - [Account state reset](account-state-reset.md): new/existing account detection and the destructive reset guard.
 - [Real device run](real-device-run.md): device selection, artifact, evidence, and current proof boundary.
+- [Screen recognition](screen-recognition.md): normalized PNG templates, thresholds, and fail-closed state detection.
 
 ## Synchronization rule
 

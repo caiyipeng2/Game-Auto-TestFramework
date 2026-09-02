@@ -101,6 +101,7 @@ player route starts. See [Account State Reset](docs/architecture/account-state-r
 - [Idle_Outpost First Route](docs/architecture/idle-outpost-first-route.md)
 - [Account State Reset](docs/architecture/account-state-reset.md)
 - [Real Device Run](docs/architecture/real-device-run.md)
+- [Screen Recognition](docs/architecture/screen-recognition.md)
 
 The interactive architecture browser is a later documentation-surface task;
 it must remain separate from the execution core.

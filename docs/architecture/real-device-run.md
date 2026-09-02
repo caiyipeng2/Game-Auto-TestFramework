@@ -52,9 +52,9 @@ repository.
 
 ## Current execution boundary
 
-The account branch, target coordinate mapping, ADB port selection, and
-in-game deletion chain are implemented and host-tested. Unity Canvas state
-recognition still comes from the adapter's injected state reader. ADB alone
-does not expose the game's Canvas text/state as native UI nodes, so a concrete
-image/OCR state backend or optional Appium/native-dialog backend is required
-before the entire route can run unattended end to end.
+The account branch, target coordinate mapping, ADB port selection, in-game
+deletion chain, and PNG screenshot state reader are implemented and tested.
+The Idle_Outpost factory can classify the observed new/existing account and
+reset-dialog states from normalized template regions. A game may replace this
+reader with OCR/OpenCV or an optional Appium/native-dialog backend when its UI
+changes or when native selectors provide stronger evidence.

@@ -1,3 +1,5 @@
+import { dirname, isAbsolute, resolve } from "node:path";
+
 import type {
   DeviceDriver,
   DeviceInfo,
@@ -15,12 +17,18 @@ import {
   type StateSnapshot,
 } from "../../../packages/core/src/contracts/evidence.js";
 import { waitForState } from "../../../packages/core/src/flow/waiter.js";
+import type {
+  NormalizedRegion,
+  TemplateMatcher,
+} from "../../../packages/screen-recognition/src/png-template-matcher.js";
+import { PngTemplateMatcher } from "../../../packages/screen-recognition/src/png-template-matcher.js";
 import {
   IdleOutpostConfigReader,
   readIdleOutpostConfig,
   readIdleOutpostManifest,
   type IdleOutpostConfigSnapshot,
   type IdleOutpostManifest,
+  type IdleOutpostStateTemplate,
 } from "./config-reader.js";
 
 export type IdleOutpostAccountMode = "new" | "existing";
@@ -31,6 +39,89 @@ export interface IdleOutpostAccountStateReader {
     driver: DeviceDriver,
     config: IdleOutpostConfigReader,
   ): Promise<IdleOutpostAccountMode>;
+}
+
+export type IdleOutpostScreenshotStateTemplate = IdleOutpostStateTemplate;
+
+export interface IdleOutpostScreenshotStateReaderOptions {
+  readonly screenshotPath: string;
+  readonly templateRoot: string;
+  readonly matcher: TemplateMatcher;
+  readonly templates: readonly IdleOutpostScreenshotStateTemplate[];
+}
+
+export interface IdleOutpostScreenshotAdapterOptions {
+  readonly screenshotPath: string;
+  readonly matcher?: TemplateMatcher;
+  readonly resetTimeoutMs?: number;
+  readonly resetPollIntervalMs?: number;
+}
+
+export class ScreenshotAccountStateReader
+  implements IdleOutpostStateReader, IdleOutpostAccountStateReader
+{
+  constructor(
+    private readonly options: IdleOutpostScreenshotStateReaderOptions,
+  ) {}
+
+  async read(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    _config: IdleOutpostConfigReader,
+  ): Promise<StateSnapshot> {
+    const capture = await driver.captureScreenshot(
+      context.device.serial,
+      this.options.screenshotPath,
+    );
+    requireSuccess(capture);
+
+    const candidates = await Promise.all(
+      this.options.templates.map(async (template) => ({
+        template,
+        match: await this.options.matcher.match(
+          this.options.screenshotPath,
+          isAbsolute(template.path)
+            ? template.path
+            : resolve(this.options.templateRoot, template.path),
+          {
+            region: template.region,
+            threshold: template.threshold,
+          },
+        ),
+      })),
+    );
+    const winner = candidates
+      .filter(({ match }) => match.matched)
+      .sort((left, right) => right.match.score - left.match.score)[0];
+    if (!winner) {
+      throw new FrameworkError(
+        "Idle_Outpost screenshot state could not be classified above configured thresholds",
+        "DEVICE_STATE",
+      );
+    }
+
+    return {
+      state: winner.template.state,
+      ...(winner.template.accountMode
+        ? { accountMode: winner.template.accountMode }
+        : {}),
+      locatorScore: winner.match.score,
+    };
+  }
+
+  async readAccountMode(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    config: IdleOutpostConfigReader,
+  ): Promise<IdleOutpostAccountMode> {
+    const snapshot = await this.read(context, driver, config);
+    return new SnapshotAccountStateReader().readAccountMode(
+      context,
+      driver,
+      config,
+      async () => snapshot,
+    );
+  }
 }
 
 export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader {
@@ -293,6 +384,31 @@ export class IdleOutpostAdapter implements GameAdapter {
   }
 
   async cleanupContext(): Promise<void> {}
+}
+
+export async function createIdleOutpostScreenshotAdapter(
+  manifestPath: string,
+  configPath: string,
+  options: IdleOutpostScreenshotAdapterOptions,
+): Promise<IdleOutpostAdapter> {
+  const [manifest, config] = await Promise.all([
+    readIdleOutpostManifest(manifestPath),
+    readIdleOutpostConfig(configPath),
+  ]);
+  const stateReader = new ScreenshotAccountStateReader({
+    screenshotPath: options.screenshotPath,
+    templateRoot: dirname(manifestPath),
+    matcher: options.matcher ?? new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+  return new IdleOutpostAdapter(manifest, config, {
+    stateReader,
+    accountStateReader: stateReader,
+    accountResetter: new IdleOutpostUiAccountResetter({
+      timeoutMs: options.resetTimeoutMs,
+      pollIntervalMs: options.resetPollIntervalMs,
+    }),
+  });
 }
 
 export async function createIdleOutpostAdapter(

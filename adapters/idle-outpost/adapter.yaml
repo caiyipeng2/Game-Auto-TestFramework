@@ -45,6 +45,34 @@ locatorTemplates:
     kind: normalized-point
     x: 0.5
     y: 0.532419
+stateTemplates:
+  - state: main-screen
+    accountMode: existing
+    path: locators/state-existing-main.png
+    region: { x: 0, y: 0.031172, width: 0.118056, height: 0.068579 }
+    threshold: 0.84
+  - state: new-account
+    accountMode: new
+    path: locators/state-new-account.png
+    region: { x: 0, y: 0.031172, width: 0.118056, height: 0.068579 }
+    threshold: 0.84
+  - state: settings-menu
+    path: locators/state-settings-menu.png
+    region: { x: 0.667, y: 0.03, width: 0.333, height: 0.22 }
+    threshold: 0.82
+  - state: account-detail-existing
+    accountMode: existing
+    path: locators/state-account-detail.png
+    region: { x: 0.167, y: 0.205, width: 0.667, height: 0.08 }
+    threshold: 0.82
+  - state: delete-account-confirm
+    path: locators/state-delete-confirm.png
+    region: { x: 0.056, y: 0.325, width: 0.889, height: 0.26 }
+    threshold: 0.82
+  - state: delete-account-success
+    path: locators/state-delete-success.png
+    region: { x: 0.056, y: 0.325, width: 0.889, height: 0.26 }
+    threshold: 0.82
 configSources:
   - path: Excel/X系统开放表_Data_SystemStatus.xlsx
     sheet: Data_SystemStatus

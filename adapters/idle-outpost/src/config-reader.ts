@@ -26,6 +26,19 @@ export interface ConfigSource {
   readonly purpose: string;
 }
 
+export interface IdleOutpostStateTemplate {
+  readonly state: string;
+  readonly accountMode?: "new" | "existing";
+  readonly path: string;
+  readonly region: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly threshold: number;
+}
+
 export interface IdleOutpostManifest {
   readonly schemaVersion: 1;
   readonly id: string;
@@ -35,6 +48,7 @@ export interface IdleOutpostManifest {
   readonly identity: GameIdentity;
   readonly profiles: readonly GameProfile[];
   readonly locatorTemplates: Readonly<Record<string, LocatorTemplate>>;
+  readonly stateTemplates: readonly IdleOutpostStateTemplate[];
   readonly configSources: readonly ConfigSource[];
 }
 
@@ -259,6 +273,47 @@ function parseManifest(value: unknown, path: string): IdleOutpostManifest {
     },
     profiles,
     locatorTemplates,
+    stateTemplates: asArray(raw.stateTemplates, `${path}.stateTemplates`).map(
+      (template, index) => {
+        const item = asRecord(template, `${path}.stateTemplates[${index}]`);
+        const region = asRecord(
+          item.region,
+          `${path}.stateTemplates[${index}].region`,
+        );
+        const accountMode = item.accountMode;
+        if (
+          accountMode !== undefined &&
+          accountMode !== "new" &&
+          accountMode !== "existing"
+        ) {
+          throw new FrameworkError(
+            `Invalid accountMode at ${path}.stateTemplates[${index}].accountMode`,
+            "HOST_TOOL",
+          );
+        }
+        return {
+          state: asString(item.state, `${path}.stateTemplates[${index}].state`),
+          ...(accountMode === undefined ? {} : { accountMode }),
+          path: asString(item.path, `${path}.stateTemplates[${index}].path`),
+          region: {
+            x: asNumber(region.x, `${path}.stateTemplates[${index}].region.x`),
+            y: asNumber(region.y, `${path}.stateTemplates[${index}].region.y`),
+            width: asNumber(
+              region.width,
+              `${path}.stateTemplates[${index}].region.width`,
+            ),
+            height: asNumber(
+              region.height,
+              `${path}.stateTemplates[${index}].region.height`,
+            ),
+          },
+          threshold: asNumber(
+            item.threshold,
+            `${path}.stateTemplates[${index}].threshold`,
+          ),
+        };
+      },
+    ),
     configSources: asArray(raw.configSources, `${path}.configSources`).map(
       (source, index) => {
         const item = asRecord(source, `${path}.configSources[${index}]`);

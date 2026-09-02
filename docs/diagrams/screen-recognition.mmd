@@ -1,0 +1,9 @@
+flowchart LR
+    Driver[ADB screenshot] --> Capture[PNG path]
+    Template[Adapter PNG template] --> Matcher[TemplateMatcher]
+    Region[Normalized region + threshold] --> Matcher
+    Capture --> Matcher
+    Matcher -->|match| State[StateSnapshot]
+    Matcher -->|unknown| Block[DEVICE_STATE blocked]
+    State --> Account[Account detector]
+    State --> Flow[Flow engine]

@@ -35,8 +35,10 @@ flowchart TD
 
 ## Current implementation boundary
 
-`IdleOutpostAdapter.prepareContext` performs the guarded branch. The account
-detector consumes a normalized `StateSnapshot`, and
-`IdleOutpostUiAccountResetter` resolves the adapter's logical targets before
-sending ADB taps. The concrete visual/Appium state source is injected because
-Unity Canvas content is not exposed as native Android nodes by ADB alone.
+`IdleOutpostAdapter.prepareContext` performs the guarded branch. The default
+Idle_Outpost screenshot factory uses the PNG template reader to produce a
+normalized `StateSnapshot`, and `IdleOutpostUiAccountResetter` resolves the
+adapter's logical targets before sending ADB taps. The reader fails closed on
+an unknown screen. A game may replace the PNG matcher with OCR, OpenCV, a QA
+bridge, or Appium for native dialogs; Unity Canvas content is not exposed as
+native Android nodes by ADB alone.

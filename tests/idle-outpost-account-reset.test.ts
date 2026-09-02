@@ -14,6 +14,7 @@ import type {
 import { FrameworkError } from "../packages/core/src/contracts/evidence.js";
 import {
   createIdleOutpostAdapter,
+  ScreenshotAccountStateReader,
   IdleOutpostUiAccountResetter,
   runIdleOutpostAccountResetFlow,
   SnapshotAccountStateReader,
@@ -148,6 +149,76 @@ test("derives account mode from normalized state snapshots", async () => {
       state: "main-screen",
     })),
     "existing",
+  );
+});
+
+test("classifies an ADB screenshot into a normalized account state", async () => {
+  const calls: string[] = [];
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath: "reports/account-state.png",
+    templateRoot: process.cwd(),
+    matcher: {
+      async match(
+        _screenshotPath: string,
+        templatePath: string,
+      ): Promise<{
+        matched: boolean;
+        score: number;
+        threshold: number;
+        region: { x: number; y: number; width: number; height: number };
+      }> {
+        calls.push(templatePath);
+        const isNewAccount = templatePath.endsWith("new-account.png");
+        return {
+          matched: isNewAccount,
+          score: isNewAccount ? 0.98 : 0.42,
+          threshold: 0.9,
+          region: { x: 0, y: 0, width: 0.2, height: 0.2 },
+        };
+      },
+    },
+    templates: [
+      {
+        state: "existing-account",
+        accountMode: "existing",
+        path: "existing-account.png",
+        region: { x: 0, y: 0, width: 0.2, height: 0.2 },
+        threshold: 0.9,
+      },
+      {
+        state: "new-account",
+        accountMode: "new",
+        path: "new-account.png",
+        region: { x: 0, y: 0, width: 0.2, height: 0.2 },
+        threshold: 0.9,
+      },
+    ],
+  });
+  const driver = {
+    captureScreenshot: async (_serial: string, path: string) => {
+      assert.equal(path, "reports/account-state.png");
+      return {
+        command: "screenshot",
+        exitCode: 0,
+        stdout: path,
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+  } as unknown as DeviceDriver;
+
+  const snapshot = await reader.read(
+    createContext(adapter),
+    driver,
+    adapter.config,
+  );
+
+  assert.equal(snapshot.state, "new-account");
+  assert.equal(snapshot.accountMode, "new");
+  assert.deepEqual(
+    calls.map((path) => path.split(/[\\/]/).pop()),
+    ["existing-account.png", "new-account.png"],
   );
 });
 
