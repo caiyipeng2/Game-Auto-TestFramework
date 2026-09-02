@@ -3,7 +3,7 @@ id: first-upgrade
 adapter: idle-outpost
 profile: test-server-v63
 preconditions:
-  - context: existing-data
+  - context: account-ready
   - context: logged-in
 steps:
   - id: wait-app-ready

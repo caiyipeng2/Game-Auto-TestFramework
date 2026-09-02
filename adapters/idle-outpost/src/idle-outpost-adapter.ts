@@ -1,4 +1,7 @@
-import type { DeviceDriver } from "../../../packages/core/src/contracts/device-driver.js";
+import type {
+  DeviceDriver,
+  DeviceInfo,
+} from "../../../packages/core/src/contracts/device-driver.js";
 import type {
   AdapterContext,
   GameAdapter,
@@ -11,6 +14,7 @@ import {
   FrameworkError,
   type StateSnapshot,
 } from "../../../packages/core/src/contracts/evidence.js";
+import { waitForState } from "../../../packages/core/src/flow/waiter.js";
 import {
   IdleOutpostConfigReader,
   readIdleOutpostConfig,
@@ -18,6 +22,128 @@ import {
   type IdleOutpostConfigSnapshot,
   type IdleOutpostManifest,
 } from "./config-reader.js";
+
+export type IdleOutpostAccountMode = "new" | "existing";
+
+export interface IdleOutpostAccountStateReader {
+  readAccountMode(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    config: IdleOutpostConfigReader,
+  ): Promise<IdleOutpostAccountMode>;
+}
+
+export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader {
+  constructor(private readonly stateReader?: IdleOutpostStateReader) {}
+
+  async readAccountMode(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    config: IdleOutpostConfigReader,
+    readOverride?: IdleOutpostStateReader["read"],
+  ): Promise<IdleOutpostAccountMode> {
+    const reader =
+      readOverride ??
+      (this.stateReader
+        ? this.stateReader.read.bind(this.stateReader)
+        : undefined);
+    if (!reader) {
+      throw new FrameworkError(
+        "Idle_Outpost state reader is required to detect the account mode",
+        "HOST_TOOL",
+      );
+    }
+    const snapshot = await reader(context, driver, config);
+    const mode = snapshot.accountMode;
+    if (mode === "new" || mode === "existing") return mode;
+    if (snapshot.state === "new-account") return "new";
+    if (
+      snapshot.state === "main-screen" ||
+      snapshot.state === "settings-menu" ||
+      snapshot.state === "account-detail-existing" ||
+      snapshot.state === "terrain-upgrade-window"
+    ) {
+      return "existing";
+    }
+    throw new FrameworkError(
+      `Idle_Outpost account mode is indeterminate from state: ${String(snapshot.state ?? "unknown")}`,
+      "DEVICE_STATE",
+    );
+  }
+}
+
+export interface IdleOutpostAccountResetter {
+  reset(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    adapter: IdleOutpostAdapter,
+  ): Promise<void>;
+}
+
+export interface IdleOutpostUiAccountResetterOptions {
+  readonly timeoutMs?: number;
+  readonly pollIntervalMs?: number;
+  readonly sleep?: (durationMs: number) => Promise<void>;
+}
+
+export interface IdleOutpostAccountResetActions {
+  tapTarget(targetId: string): Promise<void>;
+  waitForState(state: string): Promise<void>;
+  launch(): Promise<void>;
+}
+
+export async function runIdleOutpostAccountResetFlow(
+  actions: IdleOutpostAccountResetActions,
+): Promise<void> {
+  await actions.tapTarget("main.settings.entry");
+  await actions.waitForState("settings-menu");
+  await actions.tapTarget("settings.account");
+  await actions.waitForState("account-detail-existing");
+  await actions.tapTarget("account.delete-archive");
+  await actions.waitForState("delete-account-confirm");
+  await actions.tapTarget("account.delete-confirm");
+  await actions.waitForState("delete-account-success");
+  await actions.tapTarget("account.restart-game");
+  await actions.launch();
+  await actions.waitForState("new-account");
+}
+
+export class IdleOutpostUiAccountResetter implements IdleOutpostAccountResetter {
+  constructor(
+    private readonly options: IdleOutpostUiAccountResetterOptions = {},
+  ) {}
+
+  async reset(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    adapter: IdleOutpostAdapter,
+  ): Promise<void> {
+    await runIdleOutpostAccountResetFlow({
+      tapTarget: async (targetId) => {
+        const locator = await adapter.resolveTarget(targetId, context);
+        const point = toScreenPoint(locator, context.device.display);
+        const result = await driver.tap(context.device.serial, point);
+        requireSuccess(result);
+      },
+      waitForState: async (state) => {
+        await waitForState(() => adapter.readState(context, driver), state, {
+          timeoutMs: this.options.timeoutMs ?? 30_000,
+          pollIntervalMs: this.options.pollIntervalMs ?? 250,
+          sleep: this.options.sleep,
+        });
+      },
+      launch: async () => {
+        const identity = adapter.identity();
+        const result = await driver.launch(
+          context.device.serial,
+          identity.packageId,
+          identity.launchActivity,
+        );
+        requireSuccess(result);
+      },
+    });
+  }
+}
 
 export interface IdleOutpostStateReader {
   read(
@@ -29,6 +155,8 @@ export interface IdleOutpostStateReader {
 
 export interface IdleOutpostAdapterOptions {
   readonly stateReader?: IdleOutpostStateReader;
+  readonly accountStateReader?: IdleOutpostAccountStateReader;
+  readonly accountResetter?: IdleOutpostAccountResetter;
 }
 
 export class IdleOutpostAdapter implements GameAdapter {
@@ -54,7 +182,10 @@ export class IdleOutpostAdapter implements GameAdapter {
     return this.manifest.profiles;
   }
 
-  async prepareContext(context: AdapterContext): Promise<void> {
+  async prepareContext(
+    context: AdapterContext,
+    driver: DeviceDriver,
+  ): Promise<void> {
     if (
       context.artifact.packageId &&
       context.artifact.packageId !== this.identity().packageId
@@ -62,6 +193,53 @@ export class IdleOutpostAdapter implements GameAdapter {
       throw new FrameworkError(
         `Idle_Outpost artifact package mismatch: expected ${this.identity().packageId}, got ${context.artifact.packageId}`,
         "ARTIFACT_METADATA",
+      );
+    }
+
+    const accountStateReader =
+      this.options.accountStateReader ??
+      (this.options.stateReader
+        ? new SnapshotAccountStateReader(this.options.stateReader)
+        : undefined);
+    if (!accountStateReader) {
+      throw new FrameworkError(
+        "Idle_Outpost account detector is required before a real-device route can run",
+        "HOST_TOOL",
+      );
+    }
+
+    const identity = this.identity();
+    requireSuccess(
+      await driver.launch(
+        context.device.serial,
+        identity.packageId,
+        identity.launchActivity,
+      ),
+    );
+
+    const mode = await accountStateReader.readAccountMode(
+      context,
+      driver,
+      this.config,
+    );
+    if (mode === "new") return;
+    if (!this.options.accountResetter) {
+      throw new FrameworkError(
+        "Idle_Outpost detected an existing account but no account resetter is configured",
+        "HOST_TOOL",
+      );
+    }
+
+    await this.options.accountResetter.reset(context, driver, this);
+    const finalMode = await accountStateReader.readAccountMode(
+      context,
+      driver,
+      this.config,
+    );
+    if (finalMode !== "new") {
+      throw new FrameworkError(
+        `Idle_Outpost account reset did not reach a new account state: ${finalMode}`,
+        "BUSINESS_ASSERTION",
       );
     }
   }
@@ -84,11 +262,8 @@ export class IdleOutpostAdapter implements GameAdapter {
         "GAME_LOCATOR",
       );
     }
-    return {
-      kind: "image-template",
-      path: template.path,
-      threshold: template.threshold,
-    };
+    if (template.kind === "normalized-point") return template;
+    return template;
   }
 
   async readState(
@@ -146,5 +321,36 @@ function matchAssertion(actual: unknown, assertion: StateAssertion): boolean {
         : typeof actual === "string" &&
             typeof assertion.expected === "string" &&
             actual.includes(assertion.expected);
+  }
+}
+
+function toScreenPoint(
+  locator: Locator,
+  display: DeviceInfo["display"],
+): { x: number; y: number } {
+  if (locator.kind === "normalized-point") {
+    return {
+      x: locator.x * display.width,
+      y: locator.y * display.height,
+    };
+  }
+  if (locator.kind === "screen-rect") {
+    return {
+      x: locator.x + locator.width / 2,
+      y: locator.y + locator.height / 2,
+    };
+  }
+  throw new FrameworkError(
+    `Idle_Outpost reset target requires a coordinate locator: ${locator.kind}`,
+    "GAME_LOCATOR",
+  );
+}
+
+function requireSuccess(result: { exitCode: number; command: string }): void {
+  if (result.exitCode !== 0) {
+    throw new FrameworkError(
+      `Idle_Outpost account reset command failed with exit ${result.exitCode}: ${result.command}`,
+      "DEVICE_STATE",
+    );
   }
 }

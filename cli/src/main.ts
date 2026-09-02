@@ -47,6 +47,7 @@ export interface ArtifactInspectorLike {
 
 export interface CliDependencies {
   readonly driver?: DeviceDriver;
+  readonly driverFactory?: (serverPort?: number) => DeviceDriver;
   readonly adapters?: readonly GameAdapter[];
   readonly artifactInspector?: ArtifactInspectorLike;
   readonly doctor?: () => Promise<readonly DoctorCheck[]>;
@@ -211,7 +212,7 @@ async function runArtifactVerify(
   const inspection = await inspector.inspect(artifactPath);
   const serial = options.serial;
   const device = serial
-    ? await getDriver(dependencies).inspectDevice(serial)
+    ? await getDriver(dependencies, options).inspectDevice(serial)
     : undefined;
   assertArtifactCompatible(inspection, {
     packageId: options["package-id"],
@@ -245,7 +246,10 @@ async function runDeviceInspect(
   dependencies: CliDependencies,
   write: (message: string) => void,
 ): Promise<number> {
-  const device = await selectDevice(getDriver(dependencies), options.serial);
+  const device = await selectDevice(
+    getDriver(dependencies, options),
+    options.serial,
+  );
   const now = dependencies.now ?? (() => new Date());
   const report: JsonReport = {
     schemaVersion: 1,
@@ -284,7 +288,7 @@ async function runRoute(
   }
 
   const route = await loadRouteFile(routePath);
-  const driver = getDriver(dependencies);
+  const driver = getDriver(dependencies, options);
   const device = await selectDevice(driver, options.serial);
   const resolvedArtifact = await resolveArtifact(artifactPath, dependencies);
   const profiles = adapter.profiles();
@@ -404,8 +408,26 @@ async function selectDevice(
   );
 }
 
-function getDriver(dependencies: CliDependencies): DeviceDriver {
-  return dependencies.driver ?? new AdbDeviceDriver();
+function getDriver(
+  dependencies: CliDependencies,
+  options: Readonly<Record<string, string>> = {},
+): DeviceDriver {
+  if (dependencies.driver) return dependencies.driver;
+  const serverPort = options["adb-port"]
+    ? parsePort(options["adb-port"])
+    : undefined;
+  return (
+    dependencies.driverFactory?.(serverPort) ??
+    new AdbDeviceDriver(new AdbClient({ serverPort }))
+  );
+}
+
+function parsePort(value: string): number {
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new CliUsageError(`Invalid --adb-port value: ${value}`);
+  }
+  return port;
 }
 
 function requiredOption(

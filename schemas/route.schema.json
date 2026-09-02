@@ -16,7 +16,14 @@
         "additionalProperties": false,
         "required": ["context"],
         "properties": {
-          "context": { "enum": ["clean-data", "existing-data", "logged-in"] },
+          "context": {
+            "enum": [
+              "clean-data",
+              "existing-data",
+              "account-ready",
+              "logged-in"
+            ]
+          },
           "value": {}
         }
       }

@@ -1,0 +1,14 @@
+flowchart TD
+    Launch[Open game] --> Detect{Account detector}
+    Detect -->|new| Start[Start zero-state route]
+    Detect -->|existing| Settings[Tap settings]
+    Settings --> Account[Tap account]
+    Account --> Delete[Tap delete archive]
+    Delete --> Confirm[Tap confirm]
+    Confirm --> Success{Delete success?}
+    Success -->|no| Block[Block]
+    Success -->|yes| Restart[Tap restart]
+    Restart --> LaunchAgain[Launch again]
+    LaunchAgain --> Verify{New account?}
+    Verify -->|yes| Start
+    Verify -->|no| Block

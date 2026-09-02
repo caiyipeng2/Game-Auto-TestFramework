@@ -64,8 +64,8 @@ first real player route.
 ```text
 game-auto-test doctor
 game-auto-test artifact verify --adapter idle-outpost
-game-auto-test device inspect --serial <serial>
-game-auto-test run --adapter idle-outpost --route <route-file> --artifact <apk-or-apks> --serial <serial>
+game-auto-test device inspect --serial <serial> --adb-port <port>
+game-auto-test run --adapter idle-outpost --route <route-file> --artifact <apk-or-apks> --serial <serial> --adb-port <port>
 ```
 
 The current TypeScript entry point is `cli/src/main.ts`. On Windows, the
@@ -82,6 +82,12 @@ prerequisite, `3` for invalid arguments or configuration, and `10` for an
 unexpected host-tool failure. JSON report fields whose names contain tokens,
 secrets, passwords, credentials, or signing keys are redacted.
 
+For real-device routes, the game adapter must provide an account detector. It
+opens the app first, skips the reset chain for a new account, and runs the
+configured settings/account/delete/confirm/restart chain for an existing
+account. The adapter must verify that the post-restart state is new before the
+player route starts. See [Account State Reset](docs/architecture/account-state-reset.md).
+
 ## Documentation
 
 - [Architecture Design](docs/design/architecture.md)
@@ -93,6 +99,8 @@ secrets, passwords, credentials, or signing keys are redacted.
 - [Configuration Parsing Strategy](docs/architecture/config-parsing-strategy.md)
 - [Game Adapter Contract](docs/architecture/game-adapter.md)
 - [Idle_Outpost First Route](docs/architecture/idle-outpost-first-route.md)
+- [Account State Reset](docs/architecture/account-state-reset.md)
+- [Real Device Run](docs/architecture/real-device-run.md)
 
 The interactive architecture browser is a later documentation-surface task;
 it must remain separate from the execution core.

@@ -170,6 +170,39 @@ test("returns an argument error when a run omits its route", async () => {
   assert.ok(messages.some((message) => message.includes("--route")));
 });
 
+test("forwards an explicit adb server port to the default driver factory", async () => {
+  let selectedPort: number | undefined;
+  const outputRoot = await mkdtemp(join(tmpdir(), "game-auto-cli-port-"));
+
+  try {
+    const exitCode = await runCli(
+      [
+        "device",
+        "inspect",
+        "--serial",
+        fixtureDevice.serial,
+        "--adb-port",
+        "5038",
+        "--output-dir",
+        outputRoot,
+        "--run-id",
+        "port-forward",
+      ],
+      {
+        driverFactory: (serverPort) => {
+          selectedPort = serverPort;
+          return new FakeDeviceDriver();
+        },
+      },
+    );
+
+    assert.equal(exitCode, 0);
+    assert.equal(selectedPort, 5038);
+  } finally {
+    await rm(outputRoot, { recursive: true, force: true });
+  }
+});
+
 class FailingAdapter implements GameAdapter {
   readonly id = "fake-game";
   readonly contractVersion = "1.0";

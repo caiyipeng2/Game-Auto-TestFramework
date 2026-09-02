@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: idle-outpost-first-upgrade-device
+adapter: idle-outpost
+profile: test-server-v63
+serialEnv: IDLE_OUTPOST_DEVICE_SERIAL
+adbPortEnv: IDLE_OUTPOST_ADB_PORT
+artifactEnv: IDLE_OUTPOST_APKS_PATH
+route: adapters/idle-outpost/routes/first-upgrade.yaml
+preconditions:
+  - accountMode: new-or-existing
+  - accountReset: in-game-delete-chain-only
+  - deviceSelection: explicit-serial
+  - adbServer: explicit-port-when-shared
+evidence:
+  outputDirectoryEnv: GAME_AUTO_TEST_OUTPUT_DIR
+  required:
+    - launch
+    - device
+    - account-state
+    - screenshots
+    - logcat
+    - performance

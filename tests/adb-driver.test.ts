@@ -5,6 +5,7 @@ import test from "node:test";
 
 import type { CommandResult } from "../packages/core/src/contracts/device-driver.js";
 import { AdbDeviceDriver } from "../packages/adb-driver/src/adb-device-driver.js";
+import { buildAdbCommandArgs } from "../packages/adb-driver/src/adb-client.js";
 import {
   parseAdbDevices,
   parseDeviceInfo,
@@ -31,6 +32,16 @@ async function commandOutputs(): Promise<DeviceCommandOutputs> {
     connectivity: await fixture("connectivity.txt"),
   };
 }
+
+test("adds an explicit adb server port before device commands", () => {
+  assert.deepEqual(buildAdbCommandArgs(["devices", "-l"], 5038), [
+    "-P",
+    "5038",
+    "devices",
+    "-l",
+  ]);
+  assert.deepEqual(buildAdbCommandArgs(["devices"], undefined), ["devices"]);
+});
 
 test("parses an online adb device record and ignores the header", async () => {
   const records = parseAdbDevices(await fixture("devices.txt"));

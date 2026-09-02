@@ -8,10 +8,17 @@ import type {
 } from "../../../packages/core/src/contracts/game-adapter.js";
 import { FrameworkError } from "../../../packages/core/src/contracts/evidence.js";
 
-export interface LocatorTemplate {
-  readonly path: string;
-  readonly threshold?: number;
-}
+export type LocatorTemplate =
+  | {
+      readonly kind: "image-template";
+      readonly path: string;
+      readonly threshold?: number;
+    }
+  | {
+      readonly kind: "normalized-point";
+      readonly x: number;
+      readonly y: number;
+    };
 
 export interface ConfigSource {
   readonly path: string;
@@ -204,9 +211,20 @@ function parseManifest(value: unknown, path: string): IdleOutpostManifest {
       asRecord(raw.locatorTemplates, `${path}.locatorTemplates`),
     ).map(([key, value]) => {
       const item = asRecord(value, `${path}.locatorTemplates.${key}`);
+      if (item.kind === "normalized-point") {
+        return [
+          key,
+          {
+            kind: "normalized-point",
+            x: asNumber(item.x, `${path}.locatorTemplates.${key}.x`),
+            y: asNumber(item.y, `${path}.locatorTemplates.${key}.y`),
+          },
+        ];
+      }
       return [
         key,
         {
+          kind: "image-template",
           path: asString(item.path, `${path}.locatorTemplates.${key}.path`),
           ...(item.threshold === undefined
             ? {}

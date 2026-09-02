@@ -107,7 +107,7 @@ test("keeps the first route in logical player actions and verified preconditions
   );
   assert.deepEqual(
     route.preconditions?.map((precondition) => precondition.context),
-    ["existing-data", "logged-in"],
+    ["account-ready", "logged-in"],
   );
   const entryStep = route.steps[2];
   if (entryStep?.type !== "tap") throw new Error("entry step must be a tap");

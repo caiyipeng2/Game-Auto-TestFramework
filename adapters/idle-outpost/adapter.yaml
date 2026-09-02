@@ -25,6 +25,26 @@ locatorTemplates:
   terrain.upgrade.first:
     path: locators/terrain-upgrade-first.png
     threshold: 0.86
+  main.settings.entry:
+    kind: normalized-point
+    x: 0.95
+    y: 0.05
+  settings.account:
+    kind: normalized-point
+    x: 0.833333
+    y: 0.112219
+  account.delete-archive:
+    kind: normalized-point
+    x: 0.5
+    y: 0.729426
+  account.delete-confirm:
+    kind: normalized-point
+    x: 0.291667
+    y: 0.532419
+  account.restart-game:
+    kind: normalized-point
+    x: 0.5
+    y: 0.532419
 configSources:
   - path: Excel/X系统开放表_Data_SystemStatus.xlsx
     sheet: Data_SystemStatus

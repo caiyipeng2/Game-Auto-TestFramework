@@ -46,7 +46,8 @@ export interface GenericRouteStep extends RouteStepBase {
 export type RouteStep = TapStep | WaitStep | AssertStep | GenericRouteStep;
 
 export interface RoutePrecondition {
-  readonly context: "clean-data" | "existing-data" | "logged-in";
+  readonly context:
+    "clean-data" | "existing-data" | "account-ready" | "logged-in";
   readonly value?: unknown;
 }
 
