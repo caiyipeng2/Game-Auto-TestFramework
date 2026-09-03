@@ -97,6 +97,9 @@ test("classifies real existing-account and new-account screenshots", async () =>
     assert.equal(newVsExisting.matched, false);
 
     const intermediateStates = [
+      ["current-unlocked.png", "startup-vip-offer"],
+      ["after-vip-close.png", "startup-offline-income"],
+      ["after-offline-income.png", "startup-free-coins"],
       ["before-account-reset.png", "settings-menu"],
       ["account-window-before-delete.png", "account-detail-existing"],
       ["delete-archive-confirm.png", "delete-account-confirm"],
@@ -215,6 +218,58 @@ test("blocks an unknown screenshot instead of defaulting to a new account", asyn
     (error: unknown) =>
       error instanceof FrameworkError && error.category === "DEVICE_STATE",
   );
+});
+
+test("retries transient unknown screenshot frames within a bounded budget", async () => {
+  let screenshotCount = 0;
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath: "reports/transient.png",
+    templateRoot: process.cwd(),
+    matcher: {
+      async match() {
+        return {
+          matched: screenshotCount > 1,
+          score: screenshotCount > 1 ? 0.95 : 0.1,
+          threshold: 0.84,
+          region: { x: 0, y: 0, width: 1, height: 1 },
+        };
+      },
+    },
+    templates: [
+      {
+        state: "new-account",
+        accountMode: "new",
+        path: "new-account.png",
+        region: { x: 0, y: 0, width: 1, height: 1 },
+        threshold: 0.84,
+      },
+    ],
+    retryCount: 1,
+    retryDelayMs: 0,
+    sleep: async () => {},
+  });
+  const driver = {
+    captureScreenshot: async () => {
+      screenshotCount += 1;
+      return {
+        command: "screenshot",
+        exitCode: 0,
+        stdout: "reports/transient.png",
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+  } as unknown as DeviceDriver;
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const context = createContext({
+    identity: () => manifest.identity,
+    profiles: () => manifest.profiles,
+  } as unknown as GameAdapter);
+
+  const state = await reader.read(context, driver, {} as never);
+
+  assert.equal(state.state, "new-account");
+  assert.equal(screenshotCount, 2);
 });
 
 function createScreenshotDriver(

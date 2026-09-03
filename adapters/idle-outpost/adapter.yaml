@@ -45,17 +45,41 @@ locatorTemplates:
     kind: normalized-point
     x: 0.5
     y: 0.532419
+  startup.vip.close:
+    kind: normalized-point
+    x: 0.91
+    y: 0.17
+  startup.offline-income.close:
+    kind: normalized-point
+    x: 0.88
+    y: 0.22
+  startup.free-coins.dismiss:
+    kind: normalized-point
+    x: 0.5
+    y: 0.858
 stateTemplates:
   - state: main-screen
     accountMode: existing
     path: locators/state-existing-main.png
-    region: { x: 0, y: 0.031172, width: 0.118056, height: 0.068579 }
+    region: { x: 0.861111, y: 0.028055, width: 0.138889, height: 0.07793 }
     threshold: 0.84
   - state: new-account
     accountMode: new
     path: locators/state-new-account.png
-    region: { x: 0, y: 0.031172, width: 0.118056, height: 0.068579 }
+    region: { x: 0.222222, y: 0.405237, width: 0.555556, height: 0.311721 }
     threshold: 0.84
+  - state: startup-vip-offer
+    path: locators/state-startup-vip.png
+    region: { x: 0.194444, y: 0.130923, width: 0.611111, height: 0.087282 }
+    threshold: 0.78
+  - state: startup-offline-income
+    path: locators/state-startup-offline-income.png
+    region: { x: 0.194444, y: 0.174564, width: 0.611111, height: 0.087282 }
+    threshold: 0.78
+  - state: startup-free-coins
+    path: locators/state-startup-free-coins.png
+    region: { x: 0.194444, y: 0.118454, width: 0.611111, height: 0.093516 }
+    threshold: 0.78
   - state: settings-menu
     path: locators/state-settings-menu.png
     region: { x: 0.667, y: 0.03, width: 0.333, height: 0.22 }

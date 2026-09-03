@@ -41,6 +41,14 @@ export interface IdleOutpostAccountStateReader {
   ): Promise<IdleOutpostAccountMode>;
 }
 
+export interface IdleOutpostStartupOverlayHandler {
+  dismiss(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    adapter: IdleOutpostAdapter,
+  ): Promise<void>;
+}
+
 export type IdleOutpostScreenshotStateTemplate = IdleOutpostStateTemplate;
 
 export interface IdleOutpostScreenshotStateReaderOptions {
@@ -48,6 +56,9 @@ export interface IdleOutpostScreenshotStateReaderOptions {
   readonly templateRoot: string;
   readonly matcher: TemplateMatcher;
   readonly templates: readonly IdleOutpostScreenshotStateTemplate[];
+  readonly retryCount?: number;
+  readonly retryDelayMs?: number;
+  readonly sleep?: (durationMs: number) => Promise<void>;
 }
 
 export interface IdleOutpostScreenshotAdapterOptions {
@@ -55,6 +66,54 @@ export interface IdleOutpostScreenshotAdapterOptions {
   readonly matcher?: TemplateMatcher;
   readonly resetTimeoutMs?: number;
   readonly resetPollIntervalMs?: number;
+}
+
+export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverlayHandler {
+  constructor(
+    private readonly stateReader: Pick<IdleOutpostStateReader, "read">,
+    private readonly maxTransitions = 8,
+  ) {}
+
+  async dismiss(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    adapter: IdleOutpostAdapter,
+  ): Promise<void> {
+    for (
+      let transition = 0;
+      transition < this.maxTransitions;
+      transition += 1
+    ) {
+      const snapshot = await this.stateReader.read(
+        context,
+        driver,
+        adapter.config,
+      );
+      const targetId = getStartupDismissTarget(snapshot.state);
+      if (!targetId) {
+        if (
+          snapshot.state === "new-account" ||
+          snapshot.state === "main-screen"
+        ) {
+          return;
+        }
+        throw new FrameworkError(
+          `Idle_Outpost startup state is not safe to auto-dismiss: ${String(snapshot.state ?? "unknown")}`,
+          "DEVICE_STATE",
+        );
+      }
+
+      const locator = await adapter.resolveTarget(targetId, context);
+      const point = toScreenPoint(locator, context.device.display);
+      const result = await driver.tap(context.device.serial, point);
+      requireSuccess(result);
+    }
+
+    throw new FrameworkError(
+      `Idle_Outpost startup overlay transitions exceeded ${this.maxTransitions}`,
+      "DEVICE_STATE",
+    );
+  }
 }
 
 export class ScreenshotAccountStateReader
@@ -68,6 +127,32 @@ export class ScreenshotAccountStateReader
     context: AdapterContext,
     driver: DeviceDriver,
     _config: IdleOutpostConfigReader,
+  ): Promise<StateSnapshot> {
+    const retryCount = this.options.retryCount ?? 2;
+    const sleep = this.options.sleep ?? defaultSleep;
+    let lastError: UnknownScreenshotStateError | undefined;
+
+    for (let attempt = 0; attempt <= retryCount; attempt += 1) {
+      try {
+        return await this.readOnce(context, driver);
+      } catch (error) {
+        if (
+          !(error instanceof UnknownScreenshotStateError) ||
+          attempt === retryCount
+        ) {
+          throw error;
+        }
+        lastError = error;
+        await sleep(this.options.retryDelayMs ?? 300);
+      }
+    }
+
+    throw lastError ?? new UnknownScreenshotStateError();
+  }
+
+  private async readOnce(
+    context: AdapterContext,
+    driver: DeviceDriver,
   ): Promise<StateSnapshot> {
     const capture = await driver.captureScreenshot(
       context.device.serial,
@@ -93,12 +178,7 @@ export class ScreenshotAccountStateReader
     const winner = candidates
       .filter(({ match }) => match.matched)
       .sort((left, right) => right.match.score - left.match.score)[0];
-    if (!winner) {
-      throw new FrameworkError(
-        "Idle_Outpost screenshot state could not be classified above configured thresholds",
-        "DEVICE_STATE",
-      );
-    }
+    if (!winner) throw new UnknownScreenshotStateError();
 
     return {
       state: winner.template.state,
@@ -248,6 +328,7 @@ export interface IdleOutpostAdapterOptions {
   readonly stateReader?: IdleOutpostStateReader;
   readonly accountStateReader?: IdleOutpostAccountStateReader;
   readonly accountResetter?: IdleOutpostAccountResetter;
+  readonly startupOverlayHandler?: IdleOutpostStartupOverlayHandler;
 }
 
 export class IdleOutpostAdapter implements GameAdapter {
@@ -307,6 +388,7 @@ export class IdleOutpostAdapter implements GameAdapter {
         identity.launchActivity,
       ),
     );
+    await this.options.startupOverlayHandler?.dismiss(context, driver, this);
 
     const mode = await accountStateReader.readAccountMode(
       context,
@@ -400,6 +482,8 @@ export async function createIdleOutpostScreenshotAdapter(
     templateRoot: dirname(manifestPath),
     matcher: options.matcher ?? new PngTemplateMatcher(),
     templates: manifest.stateTemplates,
+    retryCount: 3,
+    retryDelayMs: 500,
   });
   return new IdleOutpostAdapter(manifest, config, {
     stateReader,
@@ -408,6 +492,7 @@ export async function createIdleOutpostScreenshotAdapter(
       timeoutMs: options.resetTimeoutMs,
       pollIntervalMs: options.resetPollIntervalMs,
     }),
+    startupOverlayHandler: new IdleOutpostStartupOverlayHandler(stateReader),
   });
 }
 
@@ -468,5 +553,31 @@ function requireSuccess(result: { exitCode: number; command: string }): void {
       `Idle_Outpost account reset command failed with exit ${result.exitCode}: ${result.command}`,
       "DEVICE_STATE",
     );
+  }
+}
+
+class UnknownScreenshotStateError extends FrameworkError {
+  constructor() {
+    super(
+      "Idle_Outpost screenshot state could not be classified above configured thresholds",
+      "DEVICE_STATE",
+    );
+  }
+}
+
+function defaultSleep(durationMs: number): Promise<void> {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, durationMs));
+}
+
+function getStartupDismissTarget(state: unknown): string | undefined {
+  switch (state) {
+    case "startup-vip-offer":
+      return "startup.vip.close";
+    case "startup-offline-income":
+      return "startup.offline-income.close";
+    case "startup-free-coins":
+      return "startup.free-coins.dismiss";
+    default:
+      return undefined;
   }
 }

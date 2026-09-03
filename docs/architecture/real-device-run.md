@@ -34,10 +34,11 @@ repository.
 
 ## 2026-09-02 proof notes
 
-- A reference Samsung device launched the Unity Activity successfully and
-  showed the TestServer splash screen.
-- A second authorized Android device was used for UI calibration at
-  `720x1604`; the app stayed in the foreground after startup.
+- The active real-device target is a Motorola `moto g - 2025` running API 35
+  at `720x1604`; all current live checks use the explicit ADB server port
+  `5038` and an explicit serial.
+- The app launched the Unity Activity successfully and stayed in the
+  foreground after startup.
 - The run encountered the expected sequence of native/game overlays, which
   were dismissed without claiming rewards.
 - The account page visibly contained non-default progress, so it was treated
@@ -50,6 +51,10 @@ repository.
   private device identifiers and account values are intentionally excluded
   from commits.
 
+The Samsung device is outside the current execution scope. It is not selected
+or queried by the live run commands; Samsung strings that remain in generic
+ADB parser fixtures are offline unit-test data only.
+
 ## Current execution boundary
 
 The account branch, target coordinate mapping, ADB port selection, in-game
@@ -58,3 +63,9 @@ The Idle_Outpost factory can classify the observed new/existing account and
 reset-dialog states from normalized template regions. A game may replace this
 reader with OCR/OpenCV or an optional Appium/native-dialog backend when its UI
 changes or when native selectors provide stronger evidence.
+
+The current Motorola session was manually advanced into the game's `下一场景`
+unlock dialog. That tutorial state is intentionally not treated as an account
+home screen yet: the reader fails closed instead of guessing an account mode or
+sending an unsafe tap. The next closed loop must add a reviewed tutorial-state
+template and its logical route action before continuing from this checkpoint.

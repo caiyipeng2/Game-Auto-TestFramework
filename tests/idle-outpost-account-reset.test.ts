@@ -14,6 +14,7 @@ import type {
 import { FrameworkError } from "../packages/core/src/contracts/evidence.js";
 import {
   createIdleOutpostAdapter,
+  IdleOutpostStartupOverlayHandler,
   ScreenshotAccountStateReader,
   IdleOutpostUiAccountResetter,
   runIdleOutpostAccountResetFlow,
@@ -130,6 +131,42 @@ test("executes the account reset actions in the user-confirmed order", async () 
     "launch",
     "wait:new-account",
   ]);
+});
+
+test("dismisses known startup overlays before account classification", async () => {
+  const states = [
+    "startup-vip-offer",
+    "startup-offline-income",
+    "startup-free-coins",
+    "main-screen",
+  ];
+  const events: string[] = [];
+  const reader = {
+    async read(): Promise<{ state: string }> {
+      return { state: states.shift() ?? "main-screen" };
+    },
+  };
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+  const driver = {
+    tap: async (_serial: string, point: { x: number; y: number }) => {
+      events.push(`tap:${point.x.toFixed(2)},${point.y.toFixed(2)}`);
+      return {
+        command: "tap",
+        exitCode: 0,
+        stdout: "",
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+  } as unknown as DeviceDriver;
+
+  await new IdleOutpostStartupOverlayHandler(reader).dismiss(
+    createContext(adapter),
+    driver,
+    adapter,
+  );
+
+  assert.equal(events.length, 3);
 });
 
 test("derives account mode from normalized state snapshots", async () => {
