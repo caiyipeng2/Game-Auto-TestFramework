@@ -67,3 +67,9 @@ tutorial checkpoint as `accountMode: new`. The
 `tutorial.chapter1.entry` and `tutorial.next-scene.close` targets to exercise
 the observed `new-account -> next-scene-unlock -> new-account` loop. The
 framework deliberately does not purchase or unlock the next scene implicitly.
+
+The Motorola calibration also recognizes `equipment-upgrade-window` and exposes
+`tutorial.equipment.upgrade` as a logical action. The live session currently
+shows the sword workshop at level 15 with a 77-coin cost after earlier manual
+progress, so this milestone stops before purchase. The first-upgrade purchase
+must be verified only after a fresh zero-state account is prepared.

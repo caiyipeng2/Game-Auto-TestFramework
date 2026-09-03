@@ -80,3 +80,8 @@ The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
 `720x1604` screen it drives the calibrated `1-1` entry, waits for the
 `下一场景` dialog, closes it, and verifies the returned `new-account` state.
+
+The sword workshop upgrade window is a separate recognized state. Its upgrade
+button is configured but not auto-clicked while the approved Motorola account
+is not at zero state; purchase verification is reserved for the next clean
+account milestone.

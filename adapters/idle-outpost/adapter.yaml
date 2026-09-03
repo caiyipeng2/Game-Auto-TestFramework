@@ -69,6 +69,10 @@ locatorTemplates:
     kind: normalized-point
     x: 0.888889
     y: 0.13217
+  tutorial.equipment.upgrade:
+    kind: normalized-point
+    x: 0.319444
+    y: 0.664589
 stateTemplates:
   - state: main-screen
     accountMode: existing
@@ -88,6 +92,10 @@ stateTemplates:
   - state: startup-network-error
     path: locators/state-startup-network-error.png
     region: { x: 0.381944, y: 0.330424, width: 0.236111, height: 0.043641 }
+    threshold: 0.9
+  - state: equipment-upgrade-window
+    path: locators/state-equipment-upgrade-window.png
+    region: { x: 0.236111, y: 0.433292, width: 0.25, height: 0.031172 }
     threshold: 0.9
   - state: startup-vip-offer
     path: locators/state-startup-vip.png

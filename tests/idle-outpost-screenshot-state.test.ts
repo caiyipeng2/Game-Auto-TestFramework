@@ -233,6 +233,38 @@ test("classifies the Motorola startup network error instead of a destructive dia
   }
 });
 
+test("classifies the Motorola equipment upgrade window separately from the account home", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-equipment-window-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(liveEvidenceRoot, "equipment-after-entry-5037-final.png"),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "equipment-upgrade-window");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test("continues preparation without destructive reset from the recognized tutorial dialog", async () => {
   const scratch = await mkdtemp(
     join(tmpdir(), "game-auto-idle-next-scene-adapter-"),

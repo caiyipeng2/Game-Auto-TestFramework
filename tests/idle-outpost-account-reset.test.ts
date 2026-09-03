@@ -343,6 +343,22 @@ test("exposes the chapter1 entry as a normalized target", async () => {
   );
 });
 
+test("exposes the equipment upgrade action as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "tutorial.equipment.upgrade",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.319444,
+      y: 0.664589,
+    },
+  );
+});
+
 function createContext(adapter: GameAdapter): AdapterContext {
   const device: DeviceInfo = {
     serial: "fixture-device",
