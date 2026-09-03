@@ -29,6 +29,10 @@ flowchart LR
   `new`.
 - Startup network errors are an explicit adapter state with a bounded retry
   action, so a pale modal cannot be mistaken for a destructive account dialog.
+- Cloud-sync splash screens are explicit transient states and are waited out
+  before account classification; persistent splash screens fail closed.
+- First-time intro story screens are explicit `new` account states; their skip
+  action remains a route-owned decision rather than an implicit startup tap.
 - Appium can supplement native Android dialogs, but Unity Canvas states still
   require image, OCR, or a game-owned QA bridge.
 

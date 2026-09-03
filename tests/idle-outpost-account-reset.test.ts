@@ -135,6 +135,7 @@ test("executes the account reset actions in the user-confirmed order", async () 
 
 test("dismisses known startup overlays before account classification", async () => {
   const states = [
+    "startup-cloud-sync",
     "startup-vip-offer",
     "startup-offline-income",
     "startup-free-coins",
@@ -168,6 +169,36 @@ test("dismisses known startup overlays before account classification", async () 
   );
 
   assert.equal(events.length, 4);
+});
+
+test("leaves the new-account intro story visible for an explicit route decision", async () => {
+  const reader = {
+    async read(): Promise<{ state: string }> {
+      return { state: "startup-intro-story" };
+    },
+  };
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+  const events: string[] = [];
+  const driver = {
+    tap: async () => {
+      events.push("tap");
+      return {
+        command: "tap",
+        exitCode: 0,
+        stdout: "",
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+  } as unknown as DeviceDriver;
+
+  await new IdleOutpostStartupOverlayHandler(reader).dismiss(
+    createContext(adapter),
+    driver,
+    adapter,
+  );
+
+  assert.deepEqual(events, []);
 });
 
 test("derives account mode from normalized state snapshots", async () => {

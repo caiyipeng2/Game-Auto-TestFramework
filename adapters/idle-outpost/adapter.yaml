@@ -93,6 +93,15 @@ stateTemplates:
     path: locators/state-startup-network-error.png
     region: { x: 0.381944, y: 0.330424, width: 0.236111, height: 0.043641 }
     threshold: 0.9
+  - state: startup-cloud-sync
+    path: locators/state-startup-cloud-sync.png
+    region: { x: 0.166667, y: 0.187032, width: 0.694444, height: 0.168329 }
+    threshold: 0.9
+  - state: startup-intro-story
+    accountMode: new
+    path: locators/state-startup-intro-story.png
+    region: { x: 0.777778, y: 0, width: 0.173611, height: 0.031172 }
+    threshold: 0.9
   - state: equipment-upgrade-window
     path: locators/state-equipment-upgrade-window.png
     region: { x: 0.236111, y: 0.433292, width: 0.25, height: 0.031172 }

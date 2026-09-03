@@ -233,6 +233,75 @@ test("classifies the Motorola startup network error instead of a destructive dia
   }
 });
 
+test("classifies the Motorola cloud-sync splash instead of a new account", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(join(tmpdir(), "game-auto-idle-splash-"));
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(
+          liveEvidenceRoot,
+          "account-reset-5037-recovery",
+          "after-manual-relaunch.png",
+        ),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "startup-cloud-sync");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the Motorola intro story as a new-account startup state", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(join(tmpdir(), "game-auto-idle-intro-story-"));
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(
+          liveEvidenceRoot,
+          "account-reset-5037-final",
+          "prepare-current.png",
+        ),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "startup-intro-story");
+    assert.equal(state.accountMode, "new");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test("classifies the Motorola equipment upgrade window separately from the account home", async () => {
   const manifest = await readIdleOutpostManifest(manifestPath);
   const scratch = await mkdtemp(

@@ -71,7 +71,11 @@ export interface IdleOutpostScreenshotAdapterOptions {
 export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverlayHandler {
   constructor(
     private readonly stateReader: Pick<IdleOutpostStateReader, "read">,
-    private readonly maxTransitions = 8,
+    private readonly maxTransitions = 20,
+    private readonly sleep: (
+      durationMs: number,
+    ) => Promise<void> = defaultSleep,
+    private readonly pollIntervalMs = 500,
   ) {}
 
   async dismiss(
@@ -89,12 +93,17 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
         driver,
         adapter.config,
       );
+      if (snapshot.state === "startup-cloud-sync") {
+        await this.sleep(this.pollIntervalMs);
+        continue;
+      }
       const targetId = getStartupDismissTarget(snapshot.state);
       if (!targetId) {
         if (
           snapshot.state === "new-account" ||
           snapshot.state === "main-screen" ||
-          snapshot.state === "next-scene-unlock"
+          snapshot.state === "next-scene-unlock" ||
+          snapshot.state === "startup-intro-story"
         ) {
           return;
         }

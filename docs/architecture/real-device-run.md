@@ -76,6 +76,15 @@ through its configured green `重试` action within the bounded startup
 transition budget. A persistent network error is reported as a blocked device
 state; it is never confused with account deletion success.
 
+The cloud-sync splash is modeled as a transient startup state and is polled
+within the same bounded budget before account classification. If it persists,
+the run blocks instead of treating the splash as a new account.
+
+After account deletion, the first-time intro story is recognized as
+`startup-intro-story` with `accountMode: new`. Preparation leaves that story
+visible for an explicit route decision and does not silently use the `点击跳过`
+action.
+
 The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
 `720x1604` screen it drives the calibrated `1-1` entry, waits for the
