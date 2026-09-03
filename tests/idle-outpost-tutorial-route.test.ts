@@ -39,14 +39,26 @@ test("loads the next-scene route as a guarded branch with an explicit close acti
   const branch = route.steps[0];
   assert.equal(branch?.type, "branch");
   if (branch?.type !== "branch") throw new Error("expected branch step");
-  assert.deepEqual(branch.condition, { state: "next-scene-unlock" });
+  assert.deepEqual(branch.condition, { state: "new-account" });
   const thenSteps = branch.then as RouteStep[];
   assert.equal(thenSteps[0]?.type, "tap");
-  if (thenSteps[0]?.type !== "tap") throw new Error("expected close tap");
-  assert.equal(thenSteps[0].target, "tutorial.next-scene.close");
+  if (thenSteps[0]?.type !== "tap") throw new Error("expected chapter1 tap");
+  assert.equal(thenSteps[0].target, "tutorial.chapter1.entry");
   assert.equal(thenSteps[1]?.type, "wait");
-  if (thenSteps[1]?.type !== "wait") throw new Error("expected state wait");
-  assert.equal(thenSteps[1].state, "new-account");
+  if (thenSteps[1]?.type !== "wait")
+    throw new Error("expected next-scene wait");
+  assert.equal(thenSteps[1].state, "next-scene-unlock");
+  assert.equal(thenSteps[2]?.type, "tap");
+  if (thenSteps[2]?.type !== "tap") throw new Error("expected close tap");
+  assert.equal(thenSteps[2].target, "tutorial.next-scene.close");
+  assert.equal(thenSteps[3]?.type, "wait");
+  if (thenSteps[3]?.type !== "wait") throw new Error("expected state wait");
+  assert.equal(thenSteps[3].state, "new-account");
+  const elseSteps = branch.else as RouteStep[];
+  assert.equal(elseSteps[0]?.type, "branch");
+  if (elseSteps[0]?.type !== "branch")
+    throw new Error("expected fallback branch");
+  assert.deepEqual(elseSteps[0].condition, { state: "next-scene-unlock" });
 });
 
 test("executes the next-scene close route and returns to the new-account tutorial", async () => {
@@ -62,12 +74,14 @@ test("executes the next-scene close route and returns to the new-account tutoria
   const route = await loadRouteFile(routePath);
   const context = createContext(adapter);
   const taps: ScreenPoint[] = [];
+  let opened = false;
   let closed = false;
   const driver = {
     launch: async () => result("launch"),
     tap: async (_serial: string, point: ScreenPoint) => {
       taps.push(point);
-      closed = true;
+      if (opened) closed = true;
+      else opened = true;
       return result("tap");
     },
     captureScreenshot: async (_serial: string, path: string) => {
@@ -76,7 +90,9 @@ test("executes the next-scene close route and returns to the new-account tutoria
           evidenceRoot,
           closed
             ? "new-account-startup-20s.png"
-            : "new-flow-after-chapter1-level1-2.png",
+            : opened
+              ? "new-flow-after-chapter1-level1-2.png"
+              : "new-account-startup-20s.png",
         ),
         path,
       );
@@ -92,7 +108,10 @@ test("executes the next-scene close route and returns to the new-account tutoria
 
     assert.equal(resultValue.status, "PASS");
     assert.equal(resultValue.steps.length, 2);
-    assert.deepEqual(taps, [{ x: 0.888889 * 720, y: 0.261845 * 1604 }]);
+    assert.deepEqual(taps, [
+      { x: 0.888889 * 720, y: 0.13217 * 1604 },
+      { x: 0.888889 * 720, y: 0.261845 * 1604 },
+    ]);
     assert.equal(resultValue.steps[0]?.stateAfter?.state, "new-account");
   } finally {
     await rm(scratch, { recursive: true, force: true });

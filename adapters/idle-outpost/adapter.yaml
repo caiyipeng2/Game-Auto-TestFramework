@@ -65,6 +65,10 @@ locatorTemplates:
     kind: normalized-point
     x: 0.888889
     y: 0.261845
+  tutorial.chapter1.entry:
+    kind: normalized-point
+    x: 0.888889
+    y: 0.13217
 stateTemplates:
   - state: main-screen
     accountMode: existing

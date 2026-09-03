@@ -75,3 +75,8 @@ The Motorola launch check also recognizes `startup-network-error` and retries
 through its configured green `重试` action within the bounded startup
 transition budget. A persistent network error is reported as a blocked device
 state; it is never confused with account deletion success.
+
+The current tutorial route is
+`adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
+`720x1604` screen it drives the calibrated `1-1` entry, waits for the
+`下一场景` dialog, closes it, and verifies the returned `new-account` state.

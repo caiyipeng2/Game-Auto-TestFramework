@@ -62,9 +62,8 @@ image/Appium state backend can replace the state reader without changing the
 route or reset sequence.
 
 The Motorola calibration also recognizes the observed `next-scene-unlock`
-tutorial checkpoint as `accountMode: new`. Its `tutorial.next-scene.close`
-target is available to a later route step for dismissing the dialog; the
+tutorial checkpoint as `accountMode: new`. The
+`dismiss-next-scene.yaml` route uses the calibrated
+`tutorial.chapter1.entry` and `tutorial.next-scene.close` targets to exercise
+the observed `new-account -> next-scene-unlock -> new-account` loop. The
 framework deliberately does not purchase or unlock the next scene implicitly.
-Until the post-close screen has its own reviewed state contract, a route must
-keep this checkpoint explicit and must not use it as a synonym for
-`main-screen`.

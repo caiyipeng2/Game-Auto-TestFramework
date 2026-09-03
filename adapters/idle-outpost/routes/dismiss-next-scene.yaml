@@ -9,8 +9,16 @@ steps:
   - id: normalize-next-scene-checkpoint
     branch:
       condition:
-        state: next-scene-unlock
+        state: new-account
       then:
+        - id: open-chapter1-entry
+          tap:
+            target: tutorial.chapter1.entry
+        - id: wait-next-scene-unlock
+          wait:
+            state: next-scene-unlock
+            timeoutMs: 30000
+            pollIntervalMs: 250
         - id: close-next-scene-dialog
           tap:
             target: tutorial.next-scene.close
@@ -20,11 +28,25 @@ steps:
             timeoutMs: 30000
             pollIntervalMs: 250
       else:
-        - id: assert-new-account-tutorial
-          assert:
-            state: new-account
-            field: accountMode
-            equals: new
+        - id: handle-open-next-scene
+          branch:
+            condition:
+              state: next-scene-unlock
+            then:
+              - id: close-open-next-scene-dialog
+                tap:
+                  target: tutorial.next-scene.close
+              - id: wait-new-account-after-close
+                wait:
+                  state: new-account
+                  timeoutMs: 30000
+                  pollIntervalMs: 250
+            else:
+              - id: assert-new-account-tutorial
+                assert:
+                  state: new-account
+                  field: accountMode
+                  equals: new
   - id: capture-new-account-tutorial
     screenshot:
       name: after-next-scene

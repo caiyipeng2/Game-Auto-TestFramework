@@ -327,6 +327,22 @@ test("exposes the next-scene dialog close action as a normalized target", async 
   );
 });
 
+test("exposes the chapter1 entry as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "tutorial.chapter1.entry",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.888889,
+      y: 0.13217,
+    },
+  );
+});
+
 function createContext(adapter: GameAdapter): AdapterContext {
   const device: DeviceInfo = {
     serial: "fixture-device",
