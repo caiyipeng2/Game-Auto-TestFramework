@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
@@ -96,6 +97,39 @@ test("uses the adb runner for inspected devices and real input commands", async 
     "120",
     "240",
   ]);
+});
+
+test("creates the local parent directory before pulling a screenshot", async () => {
+  const outputRoot = await mkdtemp(join(tmpdir(), "game-auto-adb-screenshot-"));
+  const outputPath = join(outputRoot, "nested", "evidence", "screen.png");
+  const runner = new RecordingRunner(await commandOutputs());
+  const driver = new AdbDeviceDriver(runner);
+
+  try {
+    await driver.captureScreenshot("R5CX211TXNT", outputPath);
+
+    const parent = await stat(join(outputRoot, "nested", "evidence"));
+    assert.equal(parent.isDirectory(), true);
+    assert.deepEqual(runner.commands.slice(-2), [
+      [
+        "-s",
+        "R5CX211TXNT",
+        "shell",
+        "screencap",
+        "-p",
+        "/sdcard/game-auto-test-framework-screenshot.png",
+      ],
+      [
+        "-s",
+        "R5CX211TXNT",
+        "pull",
+        "/sdcard/game-auto-test-framework-screenshot.png",
+        outputPath,
+      ],
+    ]);
+  } finally {
+    await rm(outputRoot, { recursive: true, force: true });
+  }
 });
 
 test("reports adb-supported capabilities without claiming a UI hierarchy backend", async () => {

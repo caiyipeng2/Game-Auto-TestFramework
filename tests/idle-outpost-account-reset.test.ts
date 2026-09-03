@@ -138,6 +138,7 @@ test("dismisses known startup overlays before account classification", async () 
     "startup-vip-offer",
     "startup-offline-income",
     "startup-free-coins",
+    "startup-network-error",
     "main-screen",
   ];
   const events: string[] = [];
@@ -166,7 +167,7 @@ test("dismisses known startup overlays before account classification", async () 
     adapter,
   );
 
-  assert.equal(events.length, 3);
+  assert.equal(events.length, 4);
 });
 
 test("derives account mode from normalized state snapshots", async () => {

@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: dismiss-next-scene
+adapter: idle-outpost
+profile: test-server-v63
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: normalize-next-scene-checkpoint
+    branch:
+      condition:
+        state: next-scene-unlock
+      then:
+        - id: close-next-scene-dialog
+          tap:
+            target: tutorial.next-scene.close
+        - id: wait-new-account-tutorial
+          wait:
+            state: new-account
+            timeoutMs: 30000
+            pollIntervalMs: 250
+      else:
+        - id: assert-new-account-tutorial
+          assert:
+            state: new-account
+            field: accountMode
+            equals: new
+  - id: capture-new-account-tutorial
+    screenshot:
+      name: after-next-scene

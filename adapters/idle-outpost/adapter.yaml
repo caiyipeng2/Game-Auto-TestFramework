@@ -57,6 +57,10 @@ locatorTemplates:
     kind: normalized-point
     x: 0.5
     y: 0.858
+  startup.network-error.retry:
+    kind: normalized-point
+    x: 0.5
+    y: 0.594139
   tutorial.next-scene.close:
     kind: normalized-point
     x: 0.888889
@@ -76,6 +80,10 @@ stateTemplates:
     accountMode: new
     path: locators/state-next-scene-unlock.png
     region: { x: 0.347222, y: 0.246259, width: 0.319444, height: 0.059227 }
+    threshold: 0.9
+  - state: startup-network-error
+    path: locators/state-startup-network-error.png
+    region: { x: 0.381944, y: 0.330424, width: 0.236111, height: 0.043641 }
     threshold: 0.9
   - state: startup-vip-offer
     path: locators/state-startup-vip.png

@@ -27,6 +27,8 @@ flowchart LR
 - The reader reports the winning state and score for evidence.
 - No match is an indeterminate state and blocks the route; it never defaults to
   `new`.
+- Startup network errors are an explicit adapter state with a bounded retry
+  action, so a pale modal cannot be mistaken for a destructive account dialog.
 - Appium can supplement native Android dialogs, but Unity Canvas states still
   require image, OCR, or a game-owned QA bridge.
 

@@ -70,3 +70,8 @@ home screen yet: the reader fails closed instead of guessing an account mode or
 sending an unsafe tap. The state is now recognized as `next-scene-unlock` with
 `accountMode: new`; its close target is exposed for an explicit route step,
 while purchase and scene unlock remain outside automatic preparation.
+
+The Motorola launch check also recognizes `startup-network-error` and retries
+through its configured green `重试` action within the bounded startup
+transition budget. A persistent network error is reported as a blocked device
+state; it is never confused with account deletion success.

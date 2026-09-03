@@ -142,6 +142,7 @@ export class AdbDeviceDriver implements DeviceDriver {
       REMOTE_SCREENSHOT_PATH,
     ]);
     if (capture.exitCode !== 0) return capture;
+    await mkdir(dirname(outputPath), { recursive: true });
     return this.run(serial, ["pull", REMOTE_SCREENSHOT_PATH, outputPath]);
   }
 

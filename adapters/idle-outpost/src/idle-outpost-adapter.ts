@@ -577,6 +577,8 @@ function defaultSleep(durationMs: number): Promise<void> {
 
 function getStartupDismissTarget(state: unknown): string | undefined {
   switch (state) {
+    case "startup-network-error":
+      return "startup.network-error.retry";
     case "startup-vip-offer":
       return "startup.vip.close";
     case "startup-offline-income":

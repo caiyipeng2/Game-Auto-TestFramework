@@ -28,6 +28,7 @@ const evidenceRoot = join(
   "t8-real-device",
   "ZT4229J5ZR",
 );
+const liveEvidenceRoot = join(process.cwd(), "reports", "t8-real-device-live");
 
 test("classifies real existing-account and new-account screenshots", async () => {
   const manifest = await readIdleOutpostManifest(manifestPath);
@@ -195,6 +196,38 @@ test("classifies the Motorola next-scene unlock dialog as a new-account tutorial
 
     assert.equal(state.state, "next-scene-unlock");
     assert.equal(state.accountMode, "new");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the Motorola startup network error instead of a destructive dialog", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-network-error-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(liveEvidenceRoot, "cli-current.png"),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "startup-network-error");
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }
