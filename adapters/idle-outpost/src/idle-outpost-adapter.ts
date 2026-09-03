@@ -93,7 +93,8 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
       if (!targetId) {
         if (
           snapshot.state === "new-account" ||
-          snapshot.state === "main-screen"
+          snapshot.state === "main-screen" ||
+          snapshot.state === "next-scene-unlock"
         ) {
           return;
         }
@@ -227,7 +228,12 @@ export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader
     const snapshot = await reader(context, driver, config);
     const mode = snapshot.accountMode;
     if (mode === "new" || mode === "existing") return mode;
-    if (snapshot.state === "new-account") return "new";
+    if (
+      snapshot.state === "new-account" ||
+      snapshot.state === "next-scene-unlock"
+    ) {
+      return "new";
+    }
     if (
       snapshot.state === "main-screen" ||
       snapshot.state === "settings-menu" ||

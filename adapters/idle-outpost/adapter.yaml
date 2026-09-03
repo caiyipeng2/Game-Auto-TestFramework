@@ -57,6 +57,10 @@ locatorTemplates:
     kind: normalized-point
     x: 0.5
     y: 0.858
+  tutorial.next-scene.close:
+    kind: normalized-point
+    x: 0.888889
+    y: 0.261845
 stateTemplates:
   - state: main-screen
     accountMode: existing
@@ -68,6 +72,11 @@ stateTemplates:
     path: locators/state-new-account.png
     region: { x: 0.222222, y: 0.405237, width: 0.555556, height: 0.311721 }
     threshold: 0.84
+  - state: next-scene-unlock
+    accountMode: new
+    path: locators/state-next-scene-unlock.png
+    region: { x: 0.347222, y: 0.246259, width: 0.319444, height: 0.059227 }
+    threshold: 0.9
   - state: startup-vip-offer
     path: locators/state-startup-vip.png
     region: { x: 0.194444, y: 0.130923, width: 0.611111, height: 0.087282 }

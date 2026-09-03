@@ -67,5 +67,6 @@ changes or when native selectors provide stronger evidence.
 The current Motorola session was manually advanced into the game's `下一场景`
 unlock dialog. That tutorial state is intentionally not treated as an account
 home screen yet: the reader fails closed instead of guessing an account mode or
-sending an unsafe tap. The next closed loop must add a reviewed tutorial-state
-template and its logical route action before continuing from this checkpoint.
+sending an unsafe tap. The state is now recognized as `next-scene-unlock` with
+`accountMode: new`; its close target is exposed for an explicit route step,
+while purchase and scene unlock remain outside automatic preparation.

@@ -310,6 +310,22 @@ test("resolves configured normalized reset targets into device coordinates", asy
   ]);
 });
 
+test("exposes the next-scene dialog close action as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "tutorial.next-scene.close",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.888889,
+      y: 0.261845,
+    },
+  );
+});
+
 function createContext(adapter: GameAdapter): AdapterContext {
   const device: DeviceInfo = {
     serial: "fixture-device",

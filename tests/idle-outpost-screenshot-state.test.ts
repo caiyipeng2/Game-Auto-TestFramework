@@ -169,6 +169,90 @@ test("builds a screenshot-backed adapter that skips reset for a real new-account
   }
 });
 
+test("classifies the Motorola next-scene unlock dialog as a new-account tutorial state", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(join(tmpdir(), "game-auto-idle-next-scene-"));
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(evidenceRoot, "new-flow-after-chapter1-level1-2.png"),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "next-scene-unlock");
+    assert.equal(state.accountMode, "new");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("continues preparation without destructive reset from the recognized tutorial dialog", async () => {
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-next-scene-adapter-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const adapter = await createIdleOutpostScreenshotAdapter(
+    manifestPath,
+    join(root, "config", "idle-outpost-config.snapshot.json"),
+    { screenshotPath },
+  );
+  const context = createContext(adapter);
+  let resetTaps = 0;
+  const driver = {
+    launch: async () => ({
+      command: "launch",
+      exitCode: 0,
+      stdout: "",
+      stderr: "",
+      durationMs: 1,
+    }),
+    captureScreenshot: async () => {
+      await copyFile(
+        join(evidenceRoot, "new-flow-after-chapter1-level1-2.png"),
+        screenshotPath,
+      );
+      return {
+        command: "screenshot",
+        exitCode: 0,
+        stdout: screenshotPath,
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+    tap: async () => {
+      resetTaps += 1;
+      return {
+        command: "tap",
+        exitCode: 0,
+        stdout: "",
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+  } as unknown as DeviceDriver;
+
+  try {
+    await adapter.prepareContext(context, driver);
+    assert.equal(resetTaps, 0);
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test("blocks an unknown screenshot instead of defaulting to a new account", async () => {
   const reader = new ScreenshotAccountStateReader({
     screenshotPath: "reports/unknown.png",

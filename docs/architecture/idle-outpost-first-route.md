@@ -60,3 +60,11 @@ account reset targets are normalized points calibrated against the observed
 `720x1604` device and scale through the generic locator contract. A future
 image/Appium state backend can replace the state reader without changing the
 route or reset sequence.
+
+The Motorola calibration also recognizes the observed `next-scene-unlock`
+tutorial checkpoint as `accountMode: new`. Its `tutorial.next-scene.close`
+target is available to a later route step for dismissing the dialog; the
+framework deliberately does not purchase or unlock the next scene implicitly.
+Until the post-close screen has its own reviewed state contract, a route must
+keep this checkpoint explicit and must not use it as a synonym for
+`main-screen`.
