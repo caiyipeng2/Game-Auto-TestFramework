@@ -103,7 +103,9 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
           snapshot.state === "new-account" ||
           snapshot.state === "main-screen" ||
           snapshot.state === "next-scene-unlock" ||
-          snapshot.state === "startup-intro-story"
+          snapshot.state === "startup-intro-story" ||
+          snapshot.state === "first-equipment-entry" ||
+          snapshot.state === "equipment-build-window"
         ) {
           return;
         }
@@ -187,7 +189,11 @@ export class ScreenshotAccountStateReader
     );
     const winner = candidates
       .filter(({ match }) => match.matched)
-      .sort((left, right) => right.match.score - left.match.score)[0];
+      .sort(
+        (left, right) =>
+          (right.template.priority ?? 0) - (left.template.priority ?? 0) ||
+          right.match.score - left.match.score,
+      )[0];
     if (!winner) throw new UnknownScreenshotStateError();
 
     return {

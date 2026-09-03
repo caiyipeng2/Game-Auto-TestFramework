@@ -73,6 +73,18 @@ locatorTemplates:
     kind: normalized-point
     x: 0.319444
     y: 0.664589
+  tutorial.equipment.build:
+    kind: normalized-point
+    x: 0.319444
+    y: 0.664589
+  tutorial.equipment.entry:
+    kind: normalized-point
+    x: 0.316667
+    y: 0.723192
+  tutorial.intro.advance:
+    kind: normalized-point
+    x: 0.347222
+    y: 0.654613
 stateTemplates:
   - state: main-screen
     accountMode: existing
@@ -89,52 +101,76 @@ stateTemplates:
     path: locators/state-next-scene-unlock.png
     region: { x: 0.347222, y: 0.246259, width: 0.319444, height: 0.059227 }
     threshold: 0.9
+    priority: 100
   - state: startup-network-error
     path: locators/state-startup-network-error.png
     region: { x: 0.381944, y: 0.330424, width: 0.236111, height: 0.043641 }
     threshold: 0.9
+    priority: 100
   - state: startup-cloud-sync
     path: locators/state-startup-cloud-sync.png
     region: { x: 0.166667, y: 0.187032, width: 0.694444, height: 0.168329 }
     threshold: 0.9
+    priority: 100
   - state: startup-intro-story
     accountMode: new
     path: locators/state-startup-intro-story.png
-    region: { x: 0.777778, y: 0, width: 0.173611, height: 0.031172 }
+    region: { x: 0.041667, y: 0.561097, width: 0.694444, height: 0.199501 }
     threshold: 0.9
+    priority: 100
+  - state: first-equipment-entry
+    accountMode: new
+    path: locators/state-first-equipment-entry.png
+    region: { x: 0.236111, y: 0.69202, width: 0.180556, height: 0.081047 }
+    threshold: 0.9
+    priority: 100
   - state: equipment-upgrade-window
     path: locators/state-equipment-upgrade-window.png
     region: { x: 0.236111, y: 0.433292, width: 0.25, height: 0.031172 }
     threshold: 0.9
+    priority: 100
+  - state: equipment-build-window
+    accountMode: new
+    path: locators/state-equipment-build-window.png
+    region: { x: 0.173611, y: 0.554863, width: 0.305556, height: 0.074813 }
+    threshold: 0.9
+    priority: 100
   - state: startup-vip-offer
     path: locators/state-startup-vip.png
     region: { x: 0.194444, y: 0.130923, width: 0.611111, height: 0.087282 }
-    threshold: 0.78
+    threshold: 0.9
+    priority: 100
   - state: startup-offline-income
     path: locators/state-startup-offline-income.png
     region: { x: 0.194444, y: 0.174564, width: 0.611111, height: 0.087282 }
-    threshold: 0.78
+    threshold: 0.9
+    priority: 100
   - state: startup-free-coins
     path: locators/state-startup-free-coins.png
     region: { x: 0.194444, y: 0.118454, width: 0.611111, height: 0.093516 }
-    threshold: 0.78
+    threshold: 0.9
+    priority: 100
   - state: settings-menu
     path: locators/state-settings-menu.png
     region: { x: 0.667, y: 0.03, width: 0.333, height: 0.22 }
     threshold: 0.82
+    priority: 100
   - state: account-detail-existing
     accountMode: existing
     path: locators/state-account-detail.png
     region: { x: 0.167, y: 0.205, width: 0.667, height: 0.08 }
     threshold: 0.82
+    priority: 100
   - state: delete-account-confirm
     path: locators/state-delete-confirm.png
     region: { x: 0.056, y: 0.325, width: 0.889, height: 0.26 }
     threshold: 0.82
+    priority: 100
   - state: delete-account-success
     path: locators/state-delete-success.png
     region: { x: 0.056, y: 0.325, width: 0.889, height: 0.26 }
     threshold: 0.82
+    priority: 100
 configSources:
   - path: Excel/X系统开放表_Data_SystemStatus.xlsx
     sheet: Data_SystemStatus

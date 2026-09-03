@@ -67,7 +67,7 @@ test("classifies real existing-account and new-account screenshots", async () =>
     const fresh = await reader.read(
       context,
       createScreenshotDriver(
-        join(evidenceRoot, "new-account-startup-20s.png"),
+        join(liveEvidenceRoot, "moto-current-before-entry.png"),
         screenshotPath,
       ),
       {} as never,
@@ -329,6 +329,72 @@ test("classifies the Motorola equipment upgrade window separately from the accou
     );
 
     assert.equal(state.state, "equipment-upgrade-window");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the Motorola first equipment entry tutorial state", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-equipment-entry-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(liveEvidenceRoot, "intro-story-5037", "after-dialog-advance.png"),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "first-equipment-entry");
+    assert.equal(state.accountMode, "new");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the Motorola first equipment build window separately from the upgrade window", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-equipment-build-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(liveEvidenceRoot, "equipment-route-5037-final", "current.png"),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "equipment-build-window");
+    assert.equal(state.accountMode, "new");
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }

@@ -73,3 +73,8 @@ The Motorola calibration also recognizes `equipment-upgrade-window` and exposes
 shows the sword workshop at level 15 with a 77-coin cost after earlier manual
 progress, so this milestone stops before purchase. The first-upgrade purchase
 must be verified only after a fresh zero-state account is prepared.
+
+For the actual zero-state path, `open-equipment-build.yaml` advances the
+intro-story checkpoint, enters the first sword workshop slot, and stops at
+`equipment-build-window`. The configured `tutorial.equipment.build` action is
+reserved for the next milestone because it consumes the 5-coin build cost.

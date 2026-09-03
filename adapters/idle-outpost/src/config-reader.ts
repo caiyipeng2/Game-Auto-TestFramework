@@ -37,6 +37,7 @@ export interface IdleOutpostStateTemplate {
     readonly height: number;
   };
   readonly threshold: number;
+  readonly priority?: number;
 }
 
 export interface IdleOutpostManifest {
@@ -311,6 +312,14 @@ function parseManifest(value: unknown, path: string): IdleOutpostManifest {
             item.threshold,
             `${path}.stateTemplates[${index}].threshold`,
           ),
+          ...(item.priority === undefined
+            ? {}
+            : {
+                priority: asNumber(
+                  item.priority,
+                  `${path}.stateTemplates[${index}].priority`,
+                ),
+              }),
         };
       },
     ),

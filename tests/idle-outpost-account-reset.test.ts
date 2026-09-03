@@ -390,6 +390,54 @@ test("exposes the equipment upgrade action as a normalized target", async () => 
   );
 });
 
+test("exposes the first equipment entry as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "tutorial.equipment.entry",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.316667,
+      y: 0.723192,
+    },
+  );
+});
+
+test("exposes the intro story advance as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "tutorial.intro.advance",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.347222,
+      y: 0.654613,
+    },
+  );
+});
+
+test("exposes the first equipment build action as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "tutorial.equipment.build",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.319444,
+      y: 0.664589,
+    },
+  );
+});
+
 function createContext(adapter: GameAdapter): AdapterContext {
   const device: DeviceInfo = {
     serial: "fixture-device",

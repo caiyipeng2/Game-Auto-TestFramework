@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { copyFile, mkdtemp, rm } from "node:fs/promises";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 import type {
@@ -20,7 +20,7 @@ import { loadRouteFile } from "../packages/core/src/flow/route-loader.js";
 import { createIdleOutpostScreenshotAdapter } from "../adapters/idle-outpost/src/idle-outpost-adapter.js";
 
 const root = join(process.cwd(), "adapters", "idle-outpost");
-const routePath = join(root, "routes", "dismiss-next-scene.yaml");
+const routePath = join(root, "routes", "open-equipment-build.yaml");
 const evidenceRoot = join(
   process.cwd(),
   "reports",
@@ -29,10 +29,10 @@ const evidenceRoot = join(
 );
 const liveEvidenceRoot = join(process.cwd(), "reports", "t8-real-device-live");
 
-test("loads the next-scene route as a guarded branch with an explicit close action", async () => {
+test("loads the equipment route from intro story through the build-window wait", async () => {
   const route = await loadRouteFile(routePath);
 
-  assert.equal(route.id, "dismiss-next-scene");
+  assert.equal(route.id, "open-equipment-build");
   assert.deepEqual(
     route.steps.map((step) => step.type),
     ["branch", "screenshot"],
@@ -40,31 +40,29 @@ test("loads the next-scene route as a guarded branch with an explicit close acti
   const branch = route.steps[0];
   assert.equal(branch?.type, "branch");
   if (branch?.type !== "branch") throw new Error("expected branch step");
-  assert.deepEqual(branch.condition, { state: "new-account" });
+  assert.deepEqual(branch.condition, { state: "startup-intro-story" });
   const thenSteps = branch.then as RouteStep[];
   assert.equal(thenSteps[0]?.type, "tap");
-  if (thenSteps[0]?.type !== "tap") throw new Error("expected chapter1 tap");
-  assert.equal(thenSteps[0].target, "tutorial.chapter1.entry");
+  if (thenSteps[0]?.type !== "tap") throw new Error("expected story tap");
+  assert.equal(thenSteps[0].target, "tutorial.intro.advance");
   assert.equal(thenSteps[1]?.type, "wait");
-  if (thenSteps[1]?.type !== "wait")
-    throw new Error("expected next-scene wait");
-  assert.equal(thenSteps[1].state, "next-scene-unlock");
+  if (thenSteps[1]?.type !== "wait") throw new Error("expected entry wait");
+  assert.equal(thenSteps[1].state, "first-equipment-entry");
   assert.equal(thenSteps[2]?.type, "tap");
-  if (thenSteps[2]?.type !== "tap") throw new Error("expected close tap");
-  assert.equal(thenSteps[2].target, "tutorial.next-scene.close");
+  if (thenSteps[2]?.type !== "tap") throw new Error("expected entry tap");
+  assert.equal(thenSteps[2].target, "tutorial.equipment.entry");
   assert.equal(thenSteps[3]?.type, "wait");
-  if (thenSteps[3]?.type !== "wait") throw new Error("expected state wait");
-  assert.equal(thenSteps[3].state, "new-account");
+  if (thenSteps[3]?.type !== "wait") throw new Error("expected window wait");
+  assert.equal(thenSteps[3].state, "equipment-build-window");
   const elseSteps = branch.else as RouteStep[];
   assert.equal(elseSteps[0]?.type, "branch");
-  if (elseSteps[0]?.type !== "branch")
-    throw new Error("expected fallback branch");
-  assert.deepEqual(elseSteps[0].condition, { state: "next-scene-unlock" });
+  if (elseSteps[0]?.type !== "branch") throw new Error("expected entry branch");
+  assert.deepEqual(elseSteps[0].condition, { state: "first-equipment-entry" });
 });
 
-test("executes the next-scene close route and returns to the new-account tutorial", async () => {
+test("opens the equipment build window from the first tutorial entry without purchasing", async () => {
   const scratch = await mkdtemp(
-    join(tmpdir(), "game-auto-idle-tutorial-route-"),
+    join(tmpdir(), "game-auto-idle-equipment-route-"),
   );
   const screenshotPath = join(scratch, "current.png");
   const adapter = await createIdleOutpostScreenshotAdapter(
@@ -75,22 +73,30 @@ test("executes the next-scene close route and returns to the new-account tutoria
   const route = await loadRouteFile(routePath);
   const context = createContext(adapter);
   const taps: ScreenPoint[] = [];
+  let storyAdvanced = false;
   let opened = false;
-  let closed = false;
   const driver = {
     launch: async () => result("launch"),
     tap: async (_serial: string, point: ScreenPoint) => {
       taps.push(point);
-      if (opened) closed = true;
-      else opened = true;
+      if (storyAdvanced) opened = true;
+      else storyAdvanced = true;
       return result("tap");
     },
     captureScreenshot: async (_serial: string, path: string) => {
-      const source = closed
-        ? join(liveEvidenceRoot, "moto-current-before-entry.png")
-        : opened
-          ? join(evidenceRoot, "new-flow-after-chapter1-level1-2.png")
-          : join(liveEvidenceRoot, "moto-current-before-entry.png");
+      const source = opened
+        ? join(liveEvidenceRoot, "equipment-route-5037-final", "current.png")
+        : storyAdvanced
+          ? join(
+              liveEvidenceRoot,
+              "intro-story-5037",
+              "after-dialog-advance.png",
+            )
+          : join(
+              liveEvidenceRoot,
+              "account-reset-5037-final",
+              "prepare-current.png",
+            );
       await copyFile(source, path);
       return { ...result("screenshot"), stdout: path };
     },
@@ -105,10 +111,13 @@ test("executes the next-scene close route and returns to the new-account tutoria
     assert.equal(resultValue.status, "PASS");
     assert.equal(resultValue.steps.length, 2);
     assert.deepEqual(taps, [
-      { x: 0.888889 * 720, y: 0.13217 * 1604 },
-      { x: 0.888889 * 720, y: 0.261845 * 1604 },
+      { x: 0.347222 * 720, y: 0.654613 * 1604 },
+      { x: 0.316667 * 720, y: 0.723192 * 1604 },
     ]);
-    assert.equal(resultValue.steps[0]?.stateAfter?.state, "new-account");
+    assert.equal(
+      resultValue.steps[0]?.stateAfter?.state,
+      "equipment-build-window",
+    );
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }
@@ -128,7 +137,7 @@ function createContext(adapter: GameAdapter): AdapterContext {
     packageId: adapter.identity().packageId,
   };
   return {
-    runId: "idle-outpost-tutorial-route",
+    runId: "idle-outpost-equipment-route",
     device,
     artifact,
     profile: adapter.profiles()[0]!,

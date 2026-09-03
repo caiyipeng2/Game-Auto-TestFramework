@@ -1,0 +1,51 @@
+schemaVersion: 1
+id: open-equipment-build
+adapter: idle-outpost
+profile: test-server-v63
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: open-equipment-build-window
+    branch:
+      condition:
+        state: startup-intro-story
+      then:
+        - id: advance-intro-story
+          tap:
+            target: tutorial.intro.advance
+        - id: wait-first-equipment-entry
+          wait:
+            state: first-equipment-entry
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: tap-first-equipment-entry
+          tap:
+            target: tutorial.equipment.entry
+        - id: wait-equipment-build-window
+          wait:
+            state: equipment-build-window
+            timeoutMs: 30000
+            pollIntervalMs: 250
+      else:
+        - id: open-equipment-from-entry
+          branch:
+            condition:
+              state: first-equipment-entry
+            then:
+              - id: tap-entry-from-entry-state
+                tap:
+                  target: tutorial.equipment.entry
+              - id: wait-equipment-build-after-entry
+                wait:
+                  state: equipment-build-window
+                  timeoutMs: 30000
+                  pollIntervalMs: 250
+            else:
+              - id: assert-equipment-build-window
+                assert:
+                  state: equipment-build-window
+                  equals: equipment-build-window
+  - id: capture-equipment-build-window
+    screenshot:
+      name: equipment-build-window

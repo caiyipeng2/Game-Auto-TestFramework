@@ -24,6 +24,8 @@ flowchart LR
   data dumps.
 - Each template declares its normalized region and threshold beside the
   adapter configuration.
+- Templates may declare a priority; specific dialogs and tutorial checkpoints
+  are evaluated before generic account-home templates, then score breaks ties.
 - The reader reports the winning state and score for evidence.
 - No match is an indeterminate state and blocks the route; it never defaults to
   `new`.
