@@ -20,13 +20,13 @@ import { loadRouteFile } from "../packages/core/src/flow/route-loader.js";
 import { createIdleOutpostScreenshotAdapter } from "../adapters/idle-outpost/src/idle-outpost-adapter.js";
 
 const root = join(process.cwd(), "adapters", "idle-outpost");
-const routePath = join(root, "routes", "open-terrain-upgrade.yaml");
-const liveEvidenceRoot = join(process.cwd(), "reports", "t8-real-device-live");
+const routePath = join(root, "routes", "buy-first-terrain-upgrade.yaml");
+const evidenceRoot = join(process.cwd(), "reports", "t8-real-device-live");
 
-test("loads the terrain upgrade route with an explicit entry guard", async () => {
+test("loads the first terrain upgrade route with a first-available guard", async () => {
   const route = await loadRouteFile(routePath);
 
-  assert.equal(route.id, "open-terrain-upgrade");
+  assert.equal(route.id, "buy-first-terrain-upgrade");
   assert.deepEqual(
     route.steps.map((step) => step.type),
     ["branch", "screenshot"],
@@ -42,14 +42,19 @@ test("loads the terrain upgrade route with an explicit entry guard", async () =>
   assert.equal(thenSteps[0].target, "main.terrain.upgrade.entry");
   assert.equal(thenSteps[1]?.type, "wait");
   if (thenSteps[1]?.type !== "wait")
-    throw new Error("expected terrain window wait");
+    throw new Error("expected first-available wait");
   assert.equal(thenSteps[1].state, "terrain-upgrade-first-available");
+  assert.equal(thenSteps[2]?.type, "tap");
+  if (thenSteps[2]?.type !== "tap")
+    throw new Error("expected first upgrade tap");
+  assert.equal(thenSteps[2].target, "terrain.upgrade.first");
+  assert.equal(thenSteps[3]?.type, "wait");
+  if (thenSteps[3]?.type !== "wait") throw new Error("expected owned wait");
+  assert.equal(thenSteps[3].state, "terrain-upgrade-owned");
 });
 
-test("opens the terrain upgrade window from the new-account main screen without buying", async () => {
-  const scratch = await mkdtemp(
-    join(tmpdir(), "game-auto-idle-terrain-route-"),
-  );
+test("buys the first terrain upgrade once and verifies it is owned", async () => {
+  const scratch = await mkdtemp(join(tmpdir(), "game-auto-idle-terrain-buy-"));
   const screenshotPath = join(scratch, "current.png");
   const adapter = await createIdleOutpostScreenshotAdapter(
     join(root, "adapter.yaml"),
@@ -59,25 +64,31 @@ test("opens the terrain upgrade window from the new-account main screen without 
   const route = await loadRouteFile(routePath);
   const context = createContext(adapter);
   const taps: ScreenPoint[] = [];
-  let opened = false;
+  let windowOpened = false;
+  let purchased = false;
   const driver = {
     launch: async () => result("launch"),
     tap: async (_serial: string, point: ScreenPoint) => {
       taps.push(point);
-      opened = true;
+      if (windowOpened) purchased = true;
+      else windowOpened = true;
       return result("tap");
     },
     captureScreenshot: async (_serial: string, path: string) => {
-      await copyFile(
-        opened
+      const source = purchased
+        ? join(evidenceRoot, "terrain-upgrade-5038", "after-first-upgrade.png")
+        : windowOpened
           ? join(
-              liveEvidenceRoot,
+              evidenceRoot,
               "after-build-next-5038",
               "after-terrain-upgrades.png",
             )
-          : join(liveEvidenceRoot, "moto-current-before-entry.png"),
-        path,
-      );
+          : join(
+              evidenceRoot,
+              "after-build-next-5038",
+              "after-workshop-open-wait5s.png",
+            );
+      await copyFile(source, path);
       return { ...result("screenshot"), stdout: path };
     },
   } as unknown as DeviceDriver;
@@ -90,10 +101,13 @@ test("opens the terrain upgrade window from the new-account main screen without 
 
     assert.equal(resultValue.status, "PASS");
     assert.equal(resultValue.steps.length, 2);
-    assert.deepEqual(taps, [{ x: 0.923611 * 720, y: 0.894015 * 1604 }]);
+    assert.deepEqual(taps, [
+      { x: 0.923611 * 720, y: 0.894015 * 1604 },
+      { x: 0.765278 * 720, y: 0.475686 * 1604 },
+    ]);
     assert.equal(
       resultValue.steps[0]?.stateAfter?.state,
-      "terrain-upgrade-first-available",
+      "terrain-upgrade-owned",
     );
   } finally {
     await rm(scratch, { recursive: true, force: true });
@@ -114,7 +128,7 @@ function createContext(adapter: GameAdapter): AdapterContext {
     packageId: adapter.identity().packageId,
   };
   return {
-    runId: "idle-outpost-terrain-route",
+    runId: "idle-outpost-terrain-upgrade-buy",
     device,
     artifact,
     profile: adapter.profiles()[0]!,

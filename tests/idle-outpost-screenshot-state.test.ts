@@ -467,7 +467,21 @@ test("classifies the Motorola terrain upgrade window and keeps the first upgrade
       {} as never,
     );
 
-    assert.equal(state.state, "terrain-upgrade-window");
+    assert.equal(state.state, "terrain-upgrade-first-available");
+    const ownedTemplate = manifest.stateTemplates.find(
+      (template) => template.state === "terrain-upgrade-owned",
+    );
+    assert.ok(ownedTemplate);
+    const ownedMatch = await new PngTemplateMatcher().match(
+      join(
+        liveEvidenceRoot,
+        "after-build-next-5038",
+        "after-terrain-upgrades.png",
+      ),
+      join(root, ownedTemplate.path),
+      { region: ownedTemplate.region, threshold: ownedTemplate.threshold },
+    );
+    assert.equal(ownedMatch.matched, false);
     const config = await readIdleOutpostConfig(
       join(root, "config", "idle-outpost-config.snapshot.json"),
     );
@@ -511,7 +525,44 @@ test("classifies the guided Motorola terrain upgrade window with its hand overla
       {} as never,
     );
 
-    assert.equal(state.state, "terrain-upgrade-window");
+    assert.equal(state.state, "terrain-upgrade-first-available");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the Motorola terrain upgrade window after the first item is owned", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-terrain-owned-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(
+          liveEvidenceRoot,
+          "terrain-upgrade-5038",
+          "after-first-upgrade.png",
+        ),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "terrain-upgrade-owned");
+    assert.equal(state.accountMode, "new");
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }

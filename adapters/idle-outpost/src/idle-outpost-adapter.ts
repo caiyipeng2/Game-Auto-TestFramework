@@ -258,6 +258,12 @@ export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader
     ) {
       return "existing";
     }
+    if (
+      snapshot.state === "terrain-upgrade-first-available" ||
+      snapshot.state === "terrain-upgrade-owned"
+    ) {
+      return "new";
+    }
     throw new FrameworkError(
       `Idle_Outpost account mode is indeterminate from state: ${String(snapshot.state ?? "unknown")}`,
       "DEVICE_STATE",
@@ -594,6 +600,8 @@ function defaultSleep(durationMs: number): Promise<void> {
 function getStartupDismissTarget(state: unknown): string | undefined {
   switch (state) {
     case "terrain-upgrade-window":
+    case "terrain-upgrade-first-available":
+    case "terrain-upgrade-owned":
       return "terrain.upgrade.close";
     case "startup-network-error":
       return "startup.network-error.retry";

@@ -16,7 +16,7 @@ steps:
             target: main.terrain.upgrade.entry
         - id: wait-terrain-upgrade-window
           wait:
-            state: terrain-upgrade-window
+            state: terrain-upgrade-first-available
             timeoutMs: 30000
             pollIntervalMs: 250
       else:

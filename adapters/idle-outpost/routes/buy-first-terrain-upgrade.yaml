@@ -1,0 +1,37 @@
+schemaVersion: 1
+id: buy-first-terrain-upgrade
+adapter: idle-outpost
+profile: test-server-v63
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: buy-first-terrain-upgrade-from-new-account
+    branch:
+      condition:
+        state: new-account
+      then:
+        - id: open-terrain-upgrades
+          tap:
+            target: main.terrain.upgrade.entry
+        - id: wait-first-upgrade-available
+          wait:
+            state: terrain-upgrade-first-available
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: buy-first-upgrade
+          tap:
+            target: terrain.upgrade.first
+        - id: wait-first-upgrade-owned
+          wait:
+            state: terrain-upgrade-owned
+            timeoutMs: 30000
+            pollIntervalMs: 250
+      else:
+        - id: assert-first-upgrade-owned
+          assert:
+            state: terrain-upgrade-owned
+            equals: terrain-upgrade-owned
+  - id: capture-first-terrain-upgrade
+    screenshot:
+      name: after-first-terrain-upgrade

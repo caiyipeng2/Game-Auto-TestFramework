@@ -220,6 +220,17 @@ test("derives account mode from normalized state snapshots", async () => {
     })),
     "existing",
   );
+  for (const state of [
+    "terrain-upgrade-first-available",
+    "terrain-upgrade-owned",
+  ]) {
+    assert.equal(
+      await reader.readAccountMode(context, driver, config, async () => ({
+        state,
+      })),
+      "new",
+    );
+  }
 });
 
 test("classifies an ADB screenshot into a normalized account state", async () => {

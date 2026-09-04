@@ -38,20 +38,19 @@ sequenceDiagram
     A-->>F: locator template from TerrainUpgeade1
     F->>D: input tap
     D->>P: real touch event
-    R->>F: wait terrain-upgrade-window
-    R->>F: wait first-upgrade-affordable
+    R->>F: wait terrain-upgrade-first-available
     Note over A,F: UpgradeId=1 requires 13 coins
     R->>A: tap terrain.upgrade.first
     A-->>F: locator template from TerrainUpgeade3
     F->>D: input tap
     D->>P: real touch event
-    R->>A: assert terrain-upgrade-owned
-    A-->>F: upgradeOwned=true
+    R->>F: wait terrain-upgrade-owned
+    A-->>F: purchased row is replaced by the next upgrade row
     F->>D: capture screenshot
 ```
 
 The route is stored at
-`adapters/idle-outpost/routes/first-upgrade.yaml`. Its facts are sourced from
+`adapters/idle-outpost/routes/buy-first-terrain-upgrade.yaml`. Its facts are sourced from
 the versioned snapshot at
 `adapters/idle-outpost/config/idle-outpost-config.snapshot.json`.
 
@@ -80,6 +79,11 @@ intro-story checkpoint, enters the first sword workshop slot, and stops at
 then used by `build-first-equipment.yaml`; that route consumes the 5-coin build
 cost once and asserts `equipment-build-complete`.
 
-The next route, `open-terrain-upgrade.yaml`, opens the main terrain upgrade
-window through the configured bottom-right entry and verifies the first
-configured item. It stops before the 13-coin purchase.
+The route `open-terrain-upgrade.yaml` opens the main terrain upgrade window
+through the configured bottom-right entry and verifies the first available
+item. The follow-up route `buy-first-terrain-upgrade.yaml` requires the
+`terrain-upgrade-first-available` state before tapping the configured first
+upgrade, then waits for `terrain-upgrade-owned`. The purchased screenshot
+template is intentionally scoped to the first row name and is threshold-tested
+against the pre-purchase screenshot so the route cannot silently skip or
+repeat the purchase.
