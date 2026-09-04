@@ -116,6 +116,13 @@ point for the first item, which resolved to physical `(551,763)` on the
 itself was verified with real Motorola screenshots in an offline driver
 fixture; no later upgrade item was clicked during live verification.
 
+The second terrain-upgrade continuation route declares
+`accountPolicy: preserve`, so its startup preparation does not delete a
+previously verified account. It is guarded by the first-upgrade-owned state;
+if the second upgrade is already owned, the route only asserts the terminal
+state and captures evidence. The verified configuration fact for this step is
+`UpgradeId=2` with a 30-coin cost.
+
 The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
 `720x1604` screen it drives the calibrated `1-1` entry, waits for the

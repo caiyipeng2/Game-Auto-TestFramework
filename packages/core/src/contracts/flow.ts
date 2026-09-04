@@ -56,6 +56,8 @@ export interface RouteDefinition {
   readonly id: string;
   readonly adapter: string;
   readonly profile?: string;
+  readonly accountPolicy?: AccountPolicy;
   readonly preconditions?: readonly RoutePrecondition[];
   readonly steps: readonly RouteStep[];
 }
+import type { AccountPolicy } from "./game-adapter.js";

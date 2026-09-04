@@ -82,6 +82,11 @@ prerequisite, `3` for invalid arguments or configuration, and `10` for an
 unexpected host-tool failure. JSON report fields whose names contain tokens,
 secrets, passwords, credentials, or signing keys are redacted.
 
+Continuation routes may set `accountPolicy: preserve` in the route YAML when
+they must continue from a previously verified gameplay checkpoint. The
+default is `reset-existing`, which keeps zero-state routes on the explicit
+new/existing account safety path.
+
 For real-device routes, the game adapter must provide an account detector. It
 opens the app first, skips the reset chain for a new account, and runs the
 configured settings/account/delete/confirm/restart chain for an existing

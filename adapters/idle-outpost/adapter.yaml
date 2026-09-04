@@ -27,6 +27,10 @@ locatorTemplates:
     kind: normalized-point
     x: 0.765278
     y: 0.475686
+  terrain.upgrade.next:
+    kind: normalized-point
+    x: 0.765278
+    y: 0.475686
   terrain.upgrade.close:
     kind: normalized-point
     x: 0.925
@@ -175,6 +179,12 @@ stateTemplates:
     region: { x: 0.236111, y: 0.448878, width: 0.305556, height: 0.031172 }
     threshold: 0.98
     priority: 120
+  - state: terrain-upgrade-second-owned
+    accountMode: new
+    path: locators/state-terrain-upgrade-second-owned.png
+    region: { x: 0.236111, y: 0.448878, width: 0.305556, height: 0.031172 }
+    threshold: 0.98
+    priority: 130
   - state: startup-vip-offer
     path: locators/state-startup-vip.png
     region: { x: 0.194444, y: 0.130923, width: 0.611111, height: 0.087282 }

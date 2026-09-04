@@ -87,3 +87,10 @@ upgrade, then waits for `terrain-upgrade-owned`. The purchased screenshot
 template is intentionally scoped to the first row name and is threshold-tested
 against the pre-purchase screenshot so the route cannot silently skip or
 repeat the purchase.
+
+The continuation route
+`adapters/idle-outpost/routes/buy-second-terrain-upgrade.yaml` sets
+`accountPolicy: preserve`, because it continues from the verified first
+upgrade instead of deleting the account and starting over. Configuration
+snapshot `UpgradeId=2` costs 30 coins. It accepts an already completed second
+upgrade as a terminal state and sends no tap in that case.

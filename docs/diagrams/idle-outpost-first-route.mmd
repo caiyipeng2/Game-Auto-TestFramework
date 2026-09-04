@@ -7,3 +7,6 @@ flowchart LR
     Available --> First[tap terrain.upgrade.first]
     First --> Owned[terrain-upgrade-owned]
     Owned --> Evidence[after-first-upgrade screenshot]
+    Owned --> Next[tap terrain.upgrade.next\naccountPolicy: preserve]
+    Next --> SecondOwned[terrain-upgrade-second-owned]
+    SecondOwned --> SecondEvidence[after-second-upgrade screenshot]

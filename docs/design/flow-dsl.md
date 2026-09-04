@@ -13,6 +13,7 @@ schemaVersion: 1
 id: first-upgrade
 adapter: idle-outpost
 profile: test-server
+accountPolicy: reset-existing
 preconditions:
   - context: clean-data
 steps:
@@ -72,6 +73,13 @@ battle.chapter1.level1.enter
 The Adapter resolves these IDs. A route must not directly depend on a raw
 screen coordinate unless the adapter explicitly declares that coordinate as
 the current fallback strategy.
+
+`accountPolicy` is optional and defaults to `reset-existing`. A route that is a
+continuation of an already prepared gameplay session may set
+`accountPolicy: preserve`; the generic runner passes that policy to the
+adapter, while the adapter decides which account and startup states are safe
+to preserve. This keeps account lifecycle behavior generic without allowing a
+route to bypass adapter-owned safety checks implicitly.
 
 ## Conditions and State
 

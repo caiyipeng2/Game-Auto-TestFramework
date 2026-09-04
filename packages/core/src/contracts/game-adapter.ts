@@ -26,6 +26,12 @@ export interface AdapterContext {
   readonly variables: Record<string, unknown>;
 }
 
+export type AccountPolicy = "reset-existing" | "preserve";
+
+export interface AdapterPreparationOptions {
+  readonly accountPolicy?: AccountPolicy;
+}
+
 export type NativeSelectorStrategy =
   "id" | "text" | "accessibility-id" | "xpath";
 
@@ -66,7 +72,11 @@ export interface GameAdapter {
   readonly contractVersion: string;
   identity(): GameIdentity;
   profiles(): readonly GameProfile[];
-  prepareContext(context: AdapterContext, driver: DeviceDriver): Promise<void>;
+  prepareContext(
+    context: AdapterContext,
+    driver: DeviceDriver,
+    options?: AdapterPreparationOptions,
+  ): Promise<void>;
   waitReady(
     context: AdapterContext,
     driver: DeviceDriver,

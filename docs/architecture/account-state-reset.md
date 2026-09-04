@@ -33,6 +33,15 @@ flowchart TD
   `new`.
 - Destructive actions are adapter-owned and remain outside the generic core.
 
+## Continuation routes
+
+Routes that continue from a previously verified gameplay checkpoint can set
+`accountPolicy: preserve`. The generic FlowRunner passes this policy to the
+adapter; the adapter may then keep a safe open game window and skip the
+existing-account deletion chain. The default remains `reset-existing`, so a
+normal zero-state route still performs the explicit new/existing account
+decision above.
+
 ## Current implementation boundary
 
 `IdleOutpostAdapter.prepareContext` performs the guarded branch. The default

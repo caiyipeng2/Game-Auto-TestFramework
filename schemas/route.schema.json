@@ -9,6 +9,9 @@
     "id": { "type": "string", "minLength": 1 },
     "adapter": { "type": "string", "minLength": 1 },
     "profile": { "type": "string", "minLength": 1 },
+    "accountPolicy": {
+      "enum": ["reset-existing", "preserve"]
+    },
     "preconditions": {
       "type": "array",
       "items": {

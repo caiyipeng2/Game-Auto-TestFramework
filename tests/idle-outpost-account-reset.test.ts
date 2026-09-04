@@ -102,6 +102,30 @@ test("runs the reset flow for an existing account and verifies the post-restart 
   assert.deepEqual(detectedModes, []);
 });
 
+test("preserves an existing account when the route opts into continuation mode", async () => {
+  let resetCalls = 0;
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath, {
+    accountStateReader: {
+      async readAccountMode(): Promise<IdleOutpostAccountMode> {
+        return "existing";
+      },
+    },
+    accountResetter: {
+      async reset(): Promise<void> {
+        resetCalls += 1;
+      },
+    },
+  });
+
+  await adapter.prepareContext(
+    createContext(adapter),
+    createLaunchDriver(() => {}),
+    { accountPolicy: "preserve" },
+  );
+
+  assert.equal(resetCalls, 0);
+});
+
 test("executes the account reset actions in the user-confirmed order", async () => {
   const events: string[] = [];
   const actions = {
@@ -141,6 +165,7 @@ test("dismisses known startup overlays before account classification", async () 
     "startup-free-coins",
     "startup-network-error",
     "terrain-upgrade-window",
+    "terrain-upgrade-second-owned",
     "main-screen",
   ];
   const events: string[] = [];
@@ -170,6 +195,37 @@ test("dismisses known startup overlays before account classification", async () 
   );
 
   assert.equal(events.length, 5);
+});
+
+test("keeps an open terrain window during continuation preparation", async () => {
+  const events: string[] = [];
+  const reader = {
+    async read(): Promise<{ state: string }> {
+      return { state: "terrain-upgrade-owned" };
+    },
+  };
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+  const driver = {
+    tap: async () => {
+      events.push("tap");
+      return {
+        command: "tap",
+        exitCode: 0,
+        stdout: "",
+        stderr: "",
+        durationMs: 1,
+      };
+    },
+  } as unknown as DeviceDriver;
+
+  await new IdleOutpostStartupOverlayHandler(reader).dismiss(
+    createContext(adapter),
+    driver,
+    adapter,
+    { accountPolicy: "preserve" },
+  );
+
+  assert.deepEqual(events, []);
 });
 
 test("leaves the new-account intro story visible for an explicit route decision", async () => {
@@ -223,6 +279,7 @@ test("derives account mode from normalized state snapshots", async () => {
   for (const state of [
     "terrain-upgrade-first-available",
     "terrain-upgrade-owned",
+    "terrain-upgrade-second-owned",
   ]) {
     assert.equal(
       await reader.readAccountMode(context, driver, config, async () => ({

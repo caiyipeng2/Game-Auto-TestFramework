@@ -75,6 +75,7 @@ interface RawRoute {
   id: string;
   adapter: string;
   profile?: string;
+  accountPolicy?: "reset-existing" | "preserve";
   preconditions?: RawPrecondition[];
   steps: RawStep[];
 }
@@ -92,6 +93,7 @@ function normalizeRoute(route: RawRoute): LoadedRoute {
     id: route.id,
     adapter: route.adapter,
     profile: route.profile,
+    accountPolicy: route.accountPolicy,
     preconditions: route.preconditions?.map((precondition) => ({
       context: precondition.context,
       value: precondition.value,

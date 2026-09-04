@@ -53,6 +53,11 @@ flowchart TB
 The generic layer must not import a game namespace, read a game Excel file,
 know a game UI path, or assume that the game is built with Unity.
 
+Route-level account policy is generic: `reset-existing` is the default for
+zero-state runs, while `preserve` is available for a verified continuation
+route. The generic runner forwards the value; each adapter owns the safe
+states and whether an existing account may continue.
+
 ## Runtime Sequence
 
 ```mermaid
@@ -69,8 +74,8 @@ sequenceDiagram
     D->>G: query model, API, ABI, display
     T->>D: verify and install artifact
     D->>G: install selected APK set
-    T->>F: execute route
-    F->>A: resolve precondition
+    T->>F: execute route and account policy
+    F->>A: resolve precondition and account policy
     A-->>F: required state and locator
     F->>D: tap/swipe/input/wait
     D->>G: inject real user input

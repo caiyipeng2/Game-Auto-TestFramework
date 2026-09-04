@@ -6,6 +6,7 @@ import type {
 } from "../../../packages/core/src/contracts/device-driver.js";
 import type {
   AdapterContext,
+  AdapterPreparationOptions,
   GameAdapter,
   GameIdentity,
   GameProfile,
@@ -46,6 +47,7 @@ export interface IdleOutpostStartupOverlayHandler {
     context: AdapterContext,
     driver: DeviceDriver,
     adapter: IdleOutpostAdapter,
+    options?: AdapterPreparationOptions,
   ): Promise<void>;
 }
 
@@ -82,6 +84,7 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
     context: AdapterContext,
     driver: DeviceDriver,
     adapter: IdleOutpostAdapter,
+    options: AdapterPreparationOptions = {},
   ): Promise<void> {
     for (
       let transition = 0;
@@ -98,6 +101,13 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
         continue;
       }
       const targetId = getStartupDismissTarget(snapshot.state);
+      if (
+        targetId &&
+        options.accountPolicy === "preserve" &&
+        isTerrainUpgradeWindowState(snapshot.state)
+      ) {
+        return;
+      }
       if (!targetId) {
         if (
           snapshot.state === "new-account" ||
@@ -106,7 +116,8 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
           snapshot.state === "startup-intro-story" ||
           snapshot.state === "first-equipment-entry" ||
           snapshot.state === "equipment-build-window" ||
-          snapshot.state === "equipment-build-complete"
+          snapshot.state === "equipment-build-complete" ||
+          snapshot.state === "terrain-upgrade-second-owned"
         ) {
           return;
         }
@@ -260,7 +271,8 @@ export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader
     }
     if (
       snapshot.state === "terrain-upgrade-first-available" ||
-      snapshot.state === "terrain-upgrade-owned"
+      snapshot.state === "terrain-upgrade-owned" ||
+      snapshot.state === "terrain-upgrade-second-owned"
     ) {
       return "new";
     }
@@ -385,6 +397,7 @@ export class IdleOutpostAdapter implements GameAdapter {
   async prepareContext(
     context: AdapterContext,
     driver: DeviceDriver,
+    options: AdapterPreparationOptions = {},
   ): Promise<void> {
     if (
       context.artifact.packageId &&
@@ -416,7 +429,12 @@ export class IdleOutpostAdapter implements GameAdapter {
         identity.launchActivity,
       ),
     );
-    await this.options.startupOverlayHandler?.dismiss(context, driver, this);
+    await this.options.startupOverlayHandler?.dismiss(
+      context,
+      driver,
+      this,
+      options,
+    );
 
     const mode = await accountStateReader.readAccountMode(
       context,
@@ -424,6 +442,7 @@ export class IdleOutpostAdapter implements GameAdapter {
       this.config,
     );
     if (mode === "new") return;
+    if (options.accountPolicy === "preserve") return;
     if (!this.options.accountResetter) {
       throw new FrameworkError(
         "Idle_Outpost detected an existing account but no account resetter is configured",
@@ -614,4 +633,12 @@ function getStartupDismissTarget(state: unknown): string | undefined {
     default:
       return undefined;
   }
+}
+
+function isTerrainUpgradeWindowState(state: unknown): boolean {
+  return (
+    state === "terrain-upgrade-window" ||
+    state === "terrain-upgrade-first-available" ||
+    state === "terrain-upgrade-owned"
+  );
 }

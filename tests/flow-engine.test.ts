@@ -20,6 +20,7 @@ import type {
   StateAssertion,
 } from "../packages/core/src/contracts/game-adapter.js";
 import type { StateSnapshot } from "../packages/core/src/contracts/evidence.js";
+import type { RouteDefinition } from "../packages/core/src/contracts/flow.js";
 import { loadRouteFile } from "../packages/core/src/flow/route-loader.js";
 import { FlowRunner } from "../packages/core/src/flow/flow-runner.js";
 
@@ -99,6 +100,35 @@ test("executes generic lifecycle, input, repeat, branch, and evidence steps", as
   }
 });
 
+test("passes a route account policy to adapter preparation", async () => {
+  const root = await mkdtemp(join(tmpdir(), "game-auto-flow-policy-"));
+  const adapter = new FakeAdapter();
+  const driver = new FakeDeviceDriver(adapter);
+  const context: AdapterContext = {
+    runId: "run-policy",
+    device,
+    artifact,
+    profile: adapter.profiles()[0],
+    variables: {},
+  };
+  const route = {
+    schemaVersion: 1,
+    id: "preserve-account",
+    adapter: "fake-game",
+    accountPolicy: "preserve",
+    steps: [{ id: "capture", type: "screenshot", name: "policy" }],
+  } as unknown as RouteDefinition;
+
+  try {
+    await new FlowRunner(driver, adapter, context, {
+      evidenceDir: root,
+    }).run(route);
+    assert.deepEqual(adapter.preparationPolicy, { accountPolicy: "preserve" });
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects a route without required metadata", async () => {
   await assert.rejects(
     () => loadRouteFile(join(tmpdir(), "missing-route.yaml")),
@@ -125,6 +155,9 @@ test("waits for state, resolves a logical target, taps through the driver, and r
     }).run(route);
 
     assert.equal(result.status, "PASS");
+    assert.deepEqual(adapter.preparationPolicy, {
+      accountPolicy: "reset-existing",
+    });
     assert.equal(result.steps.length, 4);
     assert.deepEqual(driver.taps, [{ x: 110, y: 220 }]);
     assert.equal(
@@ -178,6 +211,7 @@ class FakeAdapter implements GameAdapter {
   readonly id = "fake-game";
   readonly contractVersion = "1.0";
   upgraded = false;
+  preparationPolicy: unknown;
 
   identity(): GameIdentity {
     return {
@@ -192,7 +226,13 @@ class FakeAdapter implements GameAdapter {
     return [{ id: "test", environment: "fixture", settings: {} }];
   }
 
-  async prepareContext(): Promise<void> {}
+  async prepareContext(
+    _context?: AdapterContext,
+    _driver?: DeviceDriver,
+    options?: unknown,
+  ): Promise<void> {
+    this.preparationPolicy = options;
+  }
 
   async waitReady(): Promise<StateSnapshot> {
     return this.readState();

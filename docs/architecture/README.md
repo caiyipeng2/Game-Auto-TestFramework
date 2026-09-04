@@ -17,6 +17,7 @@ directly. The editable diagram sources are also kept in `docs/diagrams/`.
 - [Idle_Outpost build route](../../adapters/idle-outpost/routes/open-equipment-build.yaml): the zero-state tutorial route that stops before spending coins.
 - [Idle_Outpost first build verification](../../adapters/idle-outpost/routes/build-first-equipment.yaml): the guarded 5-coin build action and completion assertion.
 - [Idle_Outpost terrain upgrade route](../../adapters/idle-outpost/routes/open-terrain-upgrade.yaml): the configuration-backed route that opens the first terrain upgrade window.
+- [Idle_Outpost second terrain upgrade](../../adapters/idle-outpost/routes/buy-second-terrain-upgrade.yaml): the preserved-session continuation route for `UpgradeId=2` and its terminal-state guard.
 - [Account state reset](account-state-reset.md): new/existing account detection and the destructive reset guard.
 - [Real device run](real-device-run.md): device selection, artifact, evidence, and current proof boundary.
 - [Screen recognition](screen-recognition.md): normalized PNG templates, thresholds, and fail-closed state detection.

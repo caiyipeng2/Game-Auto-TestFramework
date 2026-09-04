@@ -40,6 +40,11 @@ or image template. The route only names a logical target such as
 `main.terrain.upgrade.entry`; it never embeds a raw coordinate or a Unity
 hierarchy path.
 
+`prepareContext(context, driver, options?)` receives the route's optional
+account policy. `reset-existing` is the default; a verified continuation
+route may request `preserve`, while the adapter remains responsible for
+deciding which account and startup states are safe.
+
 ## Per-game package shape
 
 ```text

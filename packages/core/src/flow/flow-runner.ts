@@ -57,7 +57,9 @@ export class FlowRunner {
       );
     }
 
-    await this.adapter.prepareContext(this.context, this.driver);
+    await this.adapter.prepareContext(this.context, this.driver, {
+      accountPolicy: route.accountPolicy ?? "reset-existing",
+    });
     const evidence: StepEvidence[] = [];
 
     try {
