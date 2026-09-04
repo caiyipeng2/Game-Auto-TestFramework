@@ -400,6 +400,39 @@ test("classifies the Motorola first equipment build window separately from the u
   }
 });
 
+test("classifies the Motorola first equipment build completion state", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-equipment-complete-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(liveEvidenceRoot, "equipment-build-5038", "after-build.png"),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "equipment-build-complete");
+    assert.equal(state.accountMode, "new");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test("continues preparation without destructive reset from the recognized tutorial dialog", async () => {
   const scratch = await mkdtemp(
     join(tmpdir(), "game-auto-idle-next-scene-adapter-"),

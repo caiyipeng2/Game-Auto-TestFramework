@@ -91,8 +91,12 @@ build window and records evidence before any purchase decision.
 
 On a zero-state account, that entry opens `equipment-build-window` rather than
 an upgrade window. The build button is mapped as
-`tutorial.equipment.build`, but remains outside automatic execution until the
-build purchase is explicitly verified.
+`tutorial.equipment.build`; the separate build route executes it only after the
+window state is verified.
+
+The verified Motorola build action transitions to
+`equipment-build-complete`; the completion state is recognized from the newly
+created yellow workstation box and is used as the route assertion target.
 
 The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola

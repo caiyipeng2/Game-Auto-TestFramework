@@ -105,7 +105,8 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
           snapshot.state === "next-scene-unlock" ||
           snapshot.state === "startup-intro-story" ||
           snapshot.state === "first-equipment-entry" ||
-          snapshot.state === "equipment-build-window"
+          snapshot.state === "equipment-build-window" ||
+          snapshot.state === "equipment-build-complete"
         ) {
           return;
         }

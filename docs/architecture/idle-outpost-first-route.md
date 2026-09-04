@@ -77,4 +77,5 @@ must be verified only after a fresh zero-state account is prepared.
 For the actual zero-state path, `open-equipment-build.yaml` advances the
 intro-story checkpoint, enters the first sword workshop slot, and stops at
 `equipment-build-window`. The configured `tutorial.equipment.build` action is
-reserved for the next milestone because it consumes the 5-coin build cost.
+then used by `build-first-equipment.yaml`; that route consumes the 5-coin build
+cost once and asserts `equipment-build-complete`.

@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: build-first-equipment
+adapter: idle-outpost
+profile: test-server-v63
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: build-first-equipment
+    branch:
+      condition:
+        state: equipment-build-window
+      then:
+        - id: tap-equipment-build
+          tap:
+            target: tutorial.equipment.build
+        - id: wait-equipment-build-complete
+          wait:
+            state: equipment-build-complete
+            timeoutMs: 30000
+            pollIntervalMs: 250
+      else:
+        - id: assert-equipment-build-complete
+          assert:
+            state: equipment-build-complete
+            equals: equipment-build-complete
+  - id: capture-equipment-build-complete
+    screenshot:
+      name: equipment-build-complete
