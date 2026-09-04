@@ -26,6 +26,8 @@ flowchart LR
   adapter configuration.
 - Templates may declare a priority; specific dialogs and tutorial checkpoints
   are evaluated before generic account-home templates, then score breaks ties.
+- Multiple templates may map to one logical state when the game adds a guide
+  hand, dim layer, or animation variant; the route still consumes one state.
 - The reader reports the winning state and score for evidence.
 - No match is an indeterminate state and blocks the route; it never defaults to
   `new`.

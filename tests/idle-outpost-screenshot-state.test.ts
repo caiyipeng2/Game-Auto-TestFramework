@@ -18,7 +18,11 @@ import {
   ScreenshotAccountStateReader,
   createIdleOutpostScreenshotAdapter,
 } from "../adapters/idle-outpost/src/idle-outpost-adapter.js";
-import { readIdleOutpostManifest } from "../adapters/idle-outpost/src/config-reader.js";
+import {
+  IdleOutpostConfigReader,
+  readIdleOutpostConfig,
+  readIdleOutpostManifest,
+} from "../adapters/idle-outpost/src/config-reader.js";
 
 const root = join(process.cwd(), "adapters", "idle-outpost");
 const manifestPath = join(root, "adapter.yaml");
@@ -428,6 +432,86 @@ test("classifies the Motorola first equipment build completion state", async () 
 
     assert.equal(state.state, "equipment-build-complete");
     assert.equal(state.accountMode, "new");
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the Motorola terrain upgrade window and keeps the first upgrade cost in the route facts", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-terrain-upgrades-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(
+          liveEvidenceRoot,
+          "after-build-next-5038",
+          "after-terrain-upgrades.png",
+        ),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "terrain-upgrade-window");
+    const config = await readIdleOutpostConfig(
+      join(root, "config", "idle-outpost-config.snapshot.json"),
+    );
+    assert.equal(
+      new IdleOutpostConfigReader(config).getFirstUpgradeFacts().firstUpgrade
+        .needCoin,
+      13,
+    );
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test("classifies the guided Motorola terrain upgrade window with its hand overlay", async () => {
+  const manifest = await readIdleOutpostManifest(manifestPath);
+  const scratch = await mkdtemp(
+    join(tmpdir(), "game-auto-idle-terrain-guided-"),
+  );
+  const screenshotPath = join(scratch, "current.png");
+  const reader = new ScreenshotAccountStateReader({
+    screenshotPath,
+    templateRoot: root,
+    matcher: new PngTemplateMatcher(),
+    templates: manifest.stateTemplates,
+  });
+
+  try {
+    const state = await reader.read(
+      createContext({
+        identity: () => manifest.identity,
+        profiles: () => manifest.profiles,
+      } as unknown as GameAdapter),
+      createScreenshotDriver(
+        join(
+          liveEvidenceRoot,
+          "terrain-upgrade-route-5038-final",
+          "current.png",
+        ),
+        screenshotPath,
+      ),
+      {} as never,
+    );
+
+    assert.equal(state.state, "terrain-upgrade-window");
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }

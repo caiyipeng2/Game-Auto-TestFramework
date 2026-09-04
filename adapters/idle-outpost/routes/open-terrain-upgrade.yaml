@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: open-terrain-upgrade
+adapter: idle-outpost
+profile: test-server-v63
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: open-terrain-upgrade-window
+    branch:
+      condition:
+        state: new-account
+      then:
+        - id: tap-terrain-upgrade-entry
+          tap:
+            target: main.terrain.upgrade.entry
+        - id: wait-terrain-upgrade-window
+          wait:
+            state: terrain-upgrade-window
+            timeoutMs: 30000
+            pollIntervalMs: 250
+      else:
+        - id: assert-terrain-upgrade-window
+          assert:
+            state: terrain-upgrade-window
+            equals: terrain-upgrade-window
+  - id: capture-terrain-upgrade-window
+    screenshot:
+      name: terrain-upgrade-window

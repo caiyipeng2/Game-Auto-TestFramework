@@ -593,6 +593,8 @@ function defaultSleep(durationMs: number): Promise<void> {
 
 function getStartupDismissTarget(state: unknown): string | undefined {
   switch (state) {
+    case "terrain-upgrade-window":
+      return "terrain.upgrade.close";
     case "startup-network-error":
       return "startup.network-error.retry";
     case "startup-vip-offer":

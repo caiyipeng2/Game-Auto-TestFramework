@@ -140,6 +140,7 @@ test("dismisses known startup overlays before account classification", async () 
     "startup-offline-income",
     "startup-free-coins",
     "startup-network-error",
+    "terrain-upgrade-window",
     "main-screen",
   ];
   const events: string[] = [];
@@ -168,7 +169,7 @@ test("dismisses known startup overlays before account classification", async () 
     adapter,
   );
 
-  assert.equal(events.length, 4);
+  assert.equal(events.length, 5);
 });
 
 test("leaves the new-account intro story visible for an explicit route decision", async () => {
@@ -434,6 +435,49 @@ test("exposes the first equipment build action as a normalized target", async ()
       kind: "normalized-point",
       x: 0.319444,
       y: 0.664589,
+    },
+  );
+});
+
+test("exposes the terrain upgrade entry and first upgrade as normalized targets", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "main.terrain.upgrade.entry",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.923611,
+      y: 0.894015,
+    },
+  );
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "terrain.upgrade.first",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.765278,
+      y: 0.475686,
+    },
+  );
+});
+
+test("exposes the terrain upgrade window close action as a normalized target", async () => {
+  const adapter = await createIdleOutpostAdapter(manifestPath, configPath);
+
+  assert.deepEqual(
+    await adapter.resolveTarget(
+      "terrain.upgrade.close",
+      createContext(adapter),
+    ),
+    {
+      kind: "normalized-point",
+      x: 0.925,
+      y: 0.394015,
     },
   );
 });

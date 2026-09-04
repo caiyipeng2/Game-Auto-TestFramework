@@ -79,3 +79,7 @@ intro-story checkpoint, enters the first sword workshop slot, and stops at
 `equipment-build-window`. The configured `tutorial.equipment.build` action is
 then used by `build-first-equipment.yaml`; that route consumes the 5-coin build
 cost once and asserts `equipment-build-complete`.
+
+The next route, `open-terrain-upgrade.yaml`, opens the main terrain upgrade
+window through the configured bottom-right entry and verifies the first
+configured item. It stops before the 13-coin purchase.

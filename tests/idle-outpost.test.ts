@@ -75,14 +75,14 @@ test("exposes logical targets and state assertions without leaking Unity details
   );
 
   assert.deepEqual(entryLocator, {
-    kind: "image-template",
-    path: "locators/main-terrain-upgrade-entry.png",
-    threshold: 0.86,
+    kind: "normalized-point",
+    x: 0.923611,
+    y: 0.894015,
   });
   assert.deepEqual(firstUpgradeLocator, {
-    kind: "image-template",
-    path: "locators/terrain-upgrade-first.png",
-    threshold: 0.86,
+    kind: "normalized-point",
+    x: 0.765278,
+    y: 0.475686,
   });
 
   await adapter.assertState(

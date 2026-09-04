@@ -98,6 +98,14 @@ The verified Motorola build action transitions to
 `equipment-build-complete`; the completion state is recognized from the newly
 created yellow workstation box and is used as the route assertion target.
 
+The next tutorial checkpoint opens the configured `terrain-upgrade-window`.
+The first configured upgrade is `UpgradeId=1` with a 13-coin cost from the
+verified snapshot; the current route stops before purchasing it.
+
+The route is `adapters/idle-outpost/routes/open-terrain-upgrade.yaml`. If the
+game restores an upgrade window from its previous UI stack during launch, the
+adapter closes that safe-to-dismiss window before the route reopens it.
+
 The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
 `720x1604` screen it drives the calibrated `1-1` entry, waits for the

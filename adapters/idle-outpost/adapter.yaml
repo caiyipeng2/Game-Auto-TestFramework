@@ -20,11 +20,17 @@ profiles:
       artifactSha256: 4CD024482C8AD55406E73E1CC05DF15C892B06AB6079DCBBBB92EC4F90A56300
 locatorTemplates:
   main.terrain.upgrade.entry:
-    path: locators/main-terrain-upgrade-entry.png
-    threshold: 0.86
+    kind: normalized-point
+    x: 0.923611
+    y: 0.894015
   terrain.upgrade.first:
-    path: locators/terrain-upgrade-first.png
-    threshold: 0.86
+    kind: normalized-point
+    x: 0.765278
+    y: 0.475686
+  terrain.upgrade.close:
+    kind: normalized-point
+    x: 0.925
+    y: 0.394015
   main.settings.entry:
     kind: normalized-point
     x: 0.95
@@ -139,6 +145,16 @@ stateTemplates:
     accountMode: new
     path: locators/state-equipment-build-complete.png
     region: { x: 0.263889, y: 0.69202, width: 0.125, height: 0.062344 }
+    threshold: 0.9
+    priority: 100
+  - state: terrain-upgrade-window
+    path: locators/state-terrain-upgrade-window.png
+    region: { x: 0.083333, y: 0.439526, width: 0.819444, height: 0.074813 }
+    threshold: 0.9
+    priority: 100
+  - state: terrain-upgrade-window
+    path: locators/state-terrain-upgrade-window-guided.png
+    region: { x: 0.083333, y: 0.439526, width: 0.819444, height: 0.074813 }
     threshold: 0.9
     priority: 100
   - state: startup-vip-offer
