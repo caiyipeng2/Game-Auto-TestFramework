@@ -130,6 +130,11 @@ removed that row. The post-action screenshot showed only `加工加速 320`, whi
 is retained as the next unclicked item and classified as
 `terrain-upgrade-third-owned`.
 
+The fourth visible route is prepared for `UpgradeId=3` at 320 coins. No live
+tap is included until the user explicitly authorizes that resource-consuming
+action; the route requires `terrain-upgrade-third-owned` and will classify the
+post-purchase screenshot as a separate terminal state.
+
 The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
 `720x1604` screen it drives the calibrated `1-1` entry, waits for the

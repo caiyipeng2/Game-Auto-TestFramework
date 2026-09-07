@@ -281,6 +281,7 @@ test("derives account mode from normalized state snapshots", async () => {
     "terrain-upgrade-owned",
     "terrain-upgrade-second-owned",
     "terrain-upgrade-third-owned",
+    "terrain-upgrade-fourth-owned",
   ]) {
     assert.equal(
       await reader.readAccountMode(context, driver, config, async () => ({

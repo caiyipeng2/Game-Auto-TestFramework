@@ -19,6 +19,7 @@ directly. The editable diagram sources are also kept in `docs/diagrams/`.
 - [Idle_Outpost terrain upgrade route](../../adapters/idle-outpost/routes/open-terrain-upgrade.yaml): the configuration-backed route that opens the first terrain upgrade window.
 - [Idle_Outpost second terrain upgrade](../../adapters/idle-outpost/routes/buy-second-terrain-upgrade.yaml): the preserved-session continuation route for `UpgradeId=2` and its terminal-state guard.
 - [Idle_Outpost third visible terrain upgrade](../../adapters/idle-outpost/routes/buy-third-visible-terrain-upgrade.yaml): the cost-ordered continuation route for `UpgradeId=4` and its terminal-state guard.
+- [Idle_Outpost fourth visible terrain upgrade](../../adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml): the guarded `UpgradeId=3` / 320-coin continuation route, pending explicit live purchase authorization.
 - [Account state reset](account-state-reset.md): new/existing account detection and the destructive reset guard.
 - [Real device run](real-device-run.md): device selection, artifact, evidence, and current proof boundary.
 - [Screen recognition](screen-recognition.md): normalized PNG templates, thresholds, and fail-closed state detection.

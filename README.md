@@ -92,6 +92,11 @@ not raw upgrade ID order. The third visible item in the current terrain is
 `UpgradeId=4` at 57 coins; `UpgradeId=3` at 320 coins remains the next item and
 is not clicked implicitly.
 
+The fourth visible continuation route is prepared at
+`adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml`; its
+real-device purchase remains an explicit authorization boundary because it
+consumes 320 coins.
+
 For real-device routes, the game adapter must provide an account detector. It
 opens the app first, skips the reset chain for a new account, and runs the
 configured settings/account/delete/confirm/restart chain for an existing

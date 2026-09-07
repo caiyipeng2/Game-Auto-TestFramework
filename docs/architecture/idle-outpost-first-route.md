@@ -102,3 +102,9 @@ game UI sorts remaining rows by `NeedCoin`, so this item appears before
 `UpgradeId=3` at 320 coins. The route buys only the 57-coin row and treats the
 post-purchase 320-coin row as `terrain-upgrade-third-owned`; it never clicks
 that later row automatically.
+
+The fourth visible route,
+`adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml`, is
+prepared for the remaining `加工加速 320` row (`UpgradeId=3`). Its host-side
+contract is implemented, but the real purchase remains an explicit
+authorization boundary before consuming 320 coins.
