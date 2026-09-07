@@ -123,6 +123,13 @@ if the second upgrade is already owned, the route only asserts the terminal
 state and captures evidence. The verified configuration fact for this step is
 `UpgradeId=2` with a 30-coin cost.
 
+The next Motorola continuation used the cost-ordered visible row rather than
+the next numeric ID. The pre-action screenshot showed `利润加成 57`, the
+configuration fact was `UpgradeId=4`, and one guarded tap at `(551,763)`
+removed that row. The post-action screenshot showed only `加工加速 320`, which
+is retained as the next unclicked item and classified as
+`terrain-upgrade-third-owned`.
+
 The current tutorial route is
 `adapters/idle-outpost/routes/dismiss-next-scene.yaml`. On the Motorola
 `720x1604` screen it drives the calibrated `1-1` entry, waits for the

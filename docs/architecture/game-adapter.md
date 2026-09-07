@@ -45,6 +45,11 @@ account policy. `reset-existing` is the default; a verified continuation
 route may request `preserve`, while the adapter remains responsible for
 deciding which account and startup states are safe.
 
+An adapter may expose several logical continuation routes over the same
+normalized target when the game reflows a list after purchase. Each route must
+still bind its precondition and terminal screenshot state to the observed UI;
+numeric configuration order alone is not a locator contract.
+
 ## Per-game package shape
 
 ```text

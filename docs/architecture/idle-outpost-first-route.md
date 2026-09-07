@@ -94,3 +94,11 @@ The continuation route
 upgrade instead of deleting the account and starting over. Configuration
 snapshot `UpgradeId=2` costs 30 coins. It accepts an already completed second
 upgrade as a terminal state and sends no tap in that case.
+
+The next continuation route is
+`adapters/idle-outpost/routes/buy-third-visible-terrain-upgrade.yaml`.
+The source sheet contains `UpgradeId=4` as the 57-coin profit upgrade and the
+game UI sorts remaining rows by `NeedCoin`, so this item appears before
+`UpgradeId=3` at 320 coins. The route buys only the 57-coin row and treats the
+post-purchase 320-coin row as `terrain-upgrade-third-owned`; it never clicks
+that later row automatically.

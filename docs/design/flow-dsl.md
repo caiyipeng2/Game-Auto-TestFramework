@@ -81,6 +81,11 @@ adapter, while the adapter decides which account and startup states are safe
 to preserve. This keeps account lifecycle behavior generic without allowing a
 route to bypass adapter-owned safety checks implicitly.
 
+Routes should name the observed logical row state rather than infer UI order
+from an ID sequence. An adapter can reuse a normalized target after list
+reflow, but it must require a distinct pre-state and post-state around each
+purchase.
+
 ## Conditions and State
 
 Adapters provide state names and state payloads. The generic engine only

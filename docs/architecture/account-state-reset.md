@@ -42,6 +42,11 @@ existing-account deletion chain. The default remains `reset-existing`, so a
 normal zero-state route still performs the explicit new/existing account
 decision above.
 
+The third visible terrain continuation also uses `preserve`; its terminal
+state is recognized as a new-account gameplay checkpoint, so a repeated run
+asserts completion without deleting the account or sending another upgrade
+tap.
+
 ## Current implementation boundary
 
 `IdleOutpostAdapter.prepareContext` performs the guarded branch. The default

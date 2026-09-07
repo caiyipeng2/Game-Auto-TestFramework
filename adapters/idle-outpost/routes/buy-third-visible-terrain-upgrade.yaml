@@ -1,0 +1,52 @@
+schemaVersion: 1
+id: buy-third-visible-terrain-upgrade
+adapter: idle-outpost
+profile: test-server-v63
+accountPolicy: preserve
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: buy-third-visible-terrain-upgrade-idempotently
+    branch:
+      condition:
+        state: new-account
+      then:
+        - id: open-terrain-upgrades
+          tap:
+            target: main.terrain.upgrade.entry
+        - id: wait-second-upgrade-owned
+          wait:
+            state: terrain-upgrade-second-owned
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: buy-third-visible-upgrade
+          tap:
+            target: terrain.upgrade.next
+        - id: wait-third-visible-upgrade-owned
+          wait:
+            state: terrain-upgrade-third-owned
+            timeoutMs: 30000
+            pollIntervalMs: 250
+      else:
+        - id: handle-open-third-visible-upgrade
+          branch:
+            condition:
+              state: terrain-upgrade-second-owned
+            then:
+              - id: buy-open-third-visible-upgrade
+                tap:
+                  target: terrain.upgrade.next
+              - id: wait-open-third-visible-upgrade-owned
+                wait:
+                  state: terrain-upgrade-third-owned
+                  timeoutMs: 30000
+                  pollIntervalMs: 250
+            else:
+              - id: assert-third-visible-upgrade-owned
+                assert:
+                  state: terrain-upgrade-third-owned
+                  equals: terrain-upgrade-third-owned
+  - id: capture-third-visible-terrain-upgrade
+    screenshot:
+      name: after-third-visible-terrain-upgrade

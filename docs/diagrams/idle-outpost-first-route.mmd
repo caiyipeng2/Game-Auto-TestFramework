@@ -10,3 +10,6 @@ flowchart LR
     Owned --> Next[tap terrain.upgrade.next\naccountPolicy: preserve]
     Next --> SecondOwned[terrain-upgrade-second-owned]
     SecondOwned --> SecondEvidence[after-second-upgrade screenshot]
+    SecondOwned --> Third[tap visible 57-coin row\nUpgradeId=4]
+    Third --> ThirdOwned[terrain-upgrade-third-owned\n320-coin row remains]
+    ThirdOwned --> ThirdEvidence[after-third-visible-upgrade screenshot]

@@ -117,7 +117,8 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
           snapshot.state === "first-equipment-entry" ||
           snapshot.state === "equipment-build-window" ||
           snapshot.state === "equipment-build-complete" ||
-          snapshot.state === "terrain-upgrade-second-owned"
+          snapshot.state === "terrain-upgrade-second-owned" ||
+          snapshot.state === "terrain-upgrade-third-owned"
         ) {
           return;
         }
@@ -272,7 +273,8 @@ export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader
     if (
       snapshot.state === "terrain-upgrade-first-available" ||
       snapshot.state === "terrain-upgrade-owned" ||
-      snapshot.state === "terrain-upgrade-second-owned"
+      snapshot.state === "terrain-upgrade-second-owned" ||
+      snapshot.state === "terrain-upgrade-third-owned"
     ) {
       return "new";
     }

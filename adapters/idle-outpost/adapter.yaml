@@ -185,6 +185,12 @@ stateTemplates:
     region: { x: 0.236111, y: 0.448878, width: 0.305556, height: 0.031172 }
     threshold: 0.98
     priority: 130
+  - state: terrain-upgrade-third-owned
+    accountMode: new
+    path: locators/state-terrain-upgrade-third-owned.png
+    region: { x: 0.236111, y: 0.448878, width: 0.305556, height: 0.031172 }
+    threshold: 0.98
+    priority: 140
   - state: startup-vip-offer
     path: locators/state-startup-vip.png
     region: { x: 0.194444, y: 0.130923, width: 0.611111, height: 0.087282 }

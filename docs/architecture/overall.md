@@ -47,3 +47,7 @@ Route-level account policy is generic: `reset-existing` is the default for
 zero-state runs, while `preserve` is available for a verified continuation
 route. The generic runner forwards the value; each adapter owns the safe
 states and whether an existing account may continue.
+
+For list-based game UI, adapter state recognition is responsible for the
+display order and visible row identity; the generic runner only sequences the
+guarded actions and evidence.

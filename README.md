@@ -87,6 +87,11 @@ they must continue from a previously verified gameplay checkpoint. The
 default is `reset-existing`, which keeps zero-state routes on the explicit
 new/existing account safety path.
 
+Idle_Outpost terrain continuation routes follow the game's visible cost order,
+not raw upgrade ID order. The third visible item in the current terrain is
+`UpgradeId=4` at 57 coins; `UpgradeId=3` at 320 coins remains the next item and
+is not clicked implicitly.
+
 For real-device routes, the game adapter must provide an account detector. It
 opens the app first, skips the reset chain for a new account, and runs the
 configured settings/account/delete/confirm/restart chain for an existing

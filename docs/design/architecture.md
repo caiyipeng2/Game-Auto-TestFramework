@@ -58,6 +58,10 @@ zero-state runs, while `preserve` is available for a verified continuation
 route. The generic runner forwards the value; each adapter owns the safe
 states and whether an existing account may continue.
 
+The adapter also owns UI ordering facts. For example, Idle_Outpost sorts
+remaining terrain upgrades by coin cost, so a visible continuation may target
+`UpgradeId=4` before `UpgradeId=3`.
+
 ## Runtime Sequence
 
 ```mermaid
