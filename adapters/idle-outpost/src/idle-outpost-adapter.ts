@@ -119,7 +119,14 @@ export class IdleOutpostStartupOverlayHandler implements IdleOutpostStartupOverl
           snapshot.state === "equipment-build-complete" ||
           snapshot.state === "terrain-upgrade-second-owned" ||
           snapshot.state === "terrain-upgrade-third-owned" ||
-          snapshot.state === "terrain-upgrade-fourth-owned"
+          snapshot.state === "terrain-upgrade-fourth-owned" ||
+          snapshot.state === "terrain-upgrade-all-owned" ||
+          snapshot.state === "device-upgrade-level-25" ||
+          snapshot.state === "next-terrain-window" ||
+          snapshot.state === "terrain-transition-loading" ||
+          snapshot.state === "terrain-1-2-new-position" ||
+          snapshot.state === "terrain-1-2-reward" ||
+          snapshot.state === "terrain-1-2-main"
         ) {
           return;
         }
@@ -276,7 +283,14 @@ export class SnapshotAccountStateReader implements IdleOutpostAccountStateReader
       snapshot.state === "terrain-upgrade-owned" ||
       snapshot.state === "terrain-upgrade-second-owned" ||
       snapshot.state === "terrain-upgrade-third-owned" ||
-      snapshot.state === "terrain-upgrade-fourth-owned"
+      snapshot.state === "terrain-upgrade-fourth-owned" ||
+      snapshot.state === "terrain-upgrade-all-owned" ||
+      snapshot.state === "device-upgrade-level-25" ||
+      snapshot.state === "next-terrain-window" ||
+      snapshot.state === "terrain-transition-loading" ||
+      snapshot.state === "terrain-1-2-new-position" ||
+      snapshot.state === "terrain-1-2-reward" ||
+      snapshot.state === "terrain-1-2-main"
     ) {
       return "new";
     }
@@ -625,6 +639,7 @@ function getStartupDismissTarget(state: unknown): string | undefined {
     case "terrain-upgrade-window":
     case "terrain-upgrade-first-available":
     case "terrain-upgrade-owned":
+    case "terrain-upgrade-all-owned":
       return "terrain.upgrade.close";
     case "startup-network-error":
       return "startup.network-error.retry";
@@ -643,6 +658,7 @@ function isTerrainUpgradeWindowState(state: unknown): boolean {
   return (
     state === "terrain-upgrade-window" ||
     state === "terrain-upgrade-first-available" ||
-    state === "terrain-upgrade-owned"
+    state === "terrain-upgrade-owned" ||
+    state === "terrain-upgrade-all-owned"
   );
 }

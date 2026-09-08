@@ -51,3 +51,9 @@ states and whether an existing account may continue.
 For list-based game UI, adapter state recognition is responsible for the
 display order and visible row identity; the generic runner only sequences the
 guarded actions and evidence.
+
+The verified Idle_Outpost continuation demonstrates the intended boundary:
+the generic engine executes `repeat`, `wait`, `tap`, `branch`, `assert`, and
+`screenshot`, while the adapter supplies the 1-2-specific state names and
+normalized coordinates. The engine has no knowledge of terrain costs, device
+levels, Unity object paths, or the meaning of the reward dialog.

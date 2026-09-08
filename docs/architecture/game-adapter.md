@@ -68,3 +68,22 @@ GameAdapter
 The text tree is a compact fallback for readers whose Markdown renderer does
 not display Mermaid; the Mermaid diagram above is the authoritative visual
 boundary.
+
+## Idle_Outpost package example
+
+The current adapter keeps its game-specific implementation in one package:
+
+```text
+adapters/idle-outpost/
+|-- adapter.yaml                         # identity, v63 profile, targets, states
+|-- config/idle-outpost-config.snapshot.json
+|-- locators/*.png                       # adapter-owned screenshot templates
+|-- routes/*.yaml                        # guarded player workflows
+|-- src/idle-outpost-adapter.ts          # state, target, account behavior
+`-- tests in /tests                       # route and screenshot evidence checks
+```
+
+The generic core sees only `GameAdapter`, `DeviceDriver`, and route contracts.
+Adding another game means adding a sibling adapter package with its own
+manifest, config snapshot, state reader, locators, and routes; the ADB driver,
+FlowRunner, reports, and route schema remain shared.

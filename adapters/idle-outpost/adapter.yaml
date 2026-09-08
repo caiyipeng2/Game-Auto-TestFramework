@@ -35,6 +35,38 @@ locatorTemplates:
     kind: normalized-point
     x: 0.925
     y: 0.394015
+  device.workshop.entry:
+    kind: normalized-point
+    x: 0.347222
+    y: 0.70823
+  device.upgrade.purchase:
+    kind: normalized-point
+    x: 0.319444
+    y: 0.662718
+  device.upgrade.close:
+    kind: normalized-point
+    x: 0.833333
+    y: 0.311721
+  main.terrain.next.entry:
+    kind: normalized-point
+    x: 0.888889
+    y: 0.13217
+  terrain.next.unlock:
+    kind: normalized-point
+    x: 0.5
+    y: 0.723192
+  terrain.transition.skip:
+    kind: normalized-point
+    x: 0.861111
+    y: 0.018704
+  terrain.next.confirm:
+    kind: normalized-point
+    x: 0.5
+    y: 0.627182
+  terrain.reward.dismiss:
+    kind: normalized-point
+    x: 0.5
+    y: 0.798005
   main.settings.entry:
     kind: normalized-point
     x: 0.95
@@ -191,6 +223,48 @@ stateTemplates:
     region: { x: 0.236111, y: 0.448878, width: 0.305556, height: 0.031172 }
     threshold: 0.98
     priority: 140
+  - state: terrain-upgrade-all-owned
+    accountMode: new
+    path: locators/state-terrain-upgrade-all-owned.png
+    region: { x: 0.097222, y: 0.473815, width: 0.805556, height: 0.205736 }
+    threshold: 0.99
+    priority: 150
+  - state: device-upgrade-level-25
+    accountMode: new
+    path: locators/state-device-upgrade-level25.png
+    region: { x: 0.090278, y: 0.405237, width: 0.465278, height: 0.299252 }
+    threshold: 0.99
+    priority: 150
+  - state: next-terrain-window
+    accountMode: new
+    path: locators/state-next-terrain-window.png
+    region: { x: 0.347222, y: 0.685786, width: 0.319444, height: 0.068579 }
+    threshold: 0.95
+    priority: 150
+  - state: terrain-transition-loading
+    accountMode: new
+    path: locators/state-terrain-transition-loading.png
+    region: { x: 0.041667, y: 0.36783, width: 0.916667, height: 0.274314 }
+    threshold: 0.8
+    priority: -100
+  - state: terrain-1-2-new-position
+    accountMode: new
+    path: locators/state-terrain-1-2-new-position.png
+    region: { x: 0.090278, y: 0.255611, width: 0.819444, height: 0.417706 }
+    threshold: 0.95
+    priority: 150
+  - state: terrain-1-2-reward
+    accountMode: new
+    path: locators/state-terrain-1-2-reward.png
+    region: { x: 0.111111, y: 0.255611, width: 0.777778, height: 0.280549 }
+    threshold: 0.95
+    priority: 150
+  - state: terrain-1-2-main
+    accountMode: new
+    path: locators/state-terrain-1-2-main.png
+    region: { x: 0.166667, y: 0.21197, width: 0.666667, height: 0.224439 }
+    threshold: 0.95
+    priority: 150
   - state: startup-vip-offer
     path: locators/state-startup-vip.png
     region: { x: 0.194444, y: 0.130923, width: 0.611111, height: 0.087282 }

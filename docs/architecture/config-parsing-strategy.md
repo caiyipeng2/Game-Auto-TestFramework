@@ -40,3 +40,16 @@ The snapshot used by the first adapter proof records:
 3. Every snapshot records source filenames and capture date.
 4. A changed source table requires a new snapshot review before changing a
    route or its assertions.
+
+## Route fact boundary
+
+The currently versioned snapshot contains the terrain-1 upgrade rows and the
+guide facts used to reach the all-upgrades-owned checkpoint. The subsequent
+`1-2` unlock was verified from the live Motorola UI as an observed 800-coin
+transition fact and is represented in the route by the logical target
+`terrain.next.unlock`, not by a generic engine constant.
+
+This distinction is intentional: source-table facts belong in the adapter
+snapshot; screenshot-derived runtime facts belong in the adapter manifest and
+state fixtures until the corresponding source row is extracted and reviewed.
+The route still fails closed on an unexpected dialog or scene.

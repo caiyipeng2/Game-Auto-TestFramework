@@ -127,3 +127,27 @@ result
   declares a test-only consent fixture.
 - The runner stops after the first hard failure unless the route declares a
   bounded diagnostic retry.
+
+## Idempotent continuation pattern
+
+Continuation routes should protect their terminal checkpoint before spending
+resources or changing gameplay state:
+
+```yaml
+- id: handle-checkpoint
+  branch:
+    condition:
+      state: terrain-1-2-main
+    then:
+      - id: assert-checkpoint
+        assert:
+          state: terrain-1-2-main
+          equals: terrain-1-2-main
+    else:
+      - id: continue-from-verified-state
+        # game adapter steps follow here
+```
+
+`reach-terrain-1-2.yaml` uses this pattern and keeps the final screenshot
+outside the branch, so both a fresh continuation and an already-completed
+rerun produce the same terminal evidence artifact.

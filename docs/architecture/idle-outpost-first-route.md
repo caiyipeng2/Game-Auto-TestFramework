@@ -105,6 +105,24 @@ that later row automatically.
 
 The fourth visible route,
 `adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml`, is
-prepared for the remaining `加工加速 320` row (`UpgradeId=3`). Its host-side
-contract is implemented, but the real purchase remains an explicit
-authorization boundary before consuming 320 coins.
+the continuation for the remaining `加工加速 320` row (`UpgradeId=3`). The
+Motorola run purchased this row once and verified the all-upgrades-owned
+checkpoint before continuing.
+
+## Consolidated 1-2 continuation
+
+The route
+`adapters/idle-outpost/routes/reach-terrain-1-2.yaml` is the first multi-step
+continuation route in the adapter. It models the observed player sequence:
+
+1. close the all-terrain-upgrades window;
+2. raise the first sword workshop device from the observed level 15 baseline
+   to level 25 with ten guarded upgrade taps;
+3. open the next terrain dialog and pay the observed 800-coin unlock;
+4. skip the transition cinematic and confirm `森林小道 (1-2)`;
+5. dismiss the five-diamond reward overlay and verify the `1-2` main scene.
+
+The route keeps all actions behind state waits and adapter-owned logical
+targets. Its top-level checkpoint branch asserts success without any tap when
+the screenshot reader already recognizes `terrain-1-2-main`, so a rerun is
+safe at the current stopping boundary.

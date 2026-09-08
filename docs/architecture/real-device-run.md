@@ -146,6 +146,25 @@ explicit intro story when needed, opens the first equipment entry, waits for
 `equipment-build-window`, and records the build window without spending coins.
 
 The sword workshop upgrade window is a separate recognized state. Its upgrade
-button is configured but not auto-clicked while the approved Motorola account
-is not at zero state; purchase verification is reserved for the next clean
-account milestone.
+button remains an adapter-owned logical target; the consolidated 1-2 route
+uses it only after the all-upgrades-owned checkpoint and verifies the observed
+level-15-to-25 continuation on the authorized Motorola device.
+
+## Verified 1-2 checkpoint
+
+The authorized Motorola continuation used
+`adapters/idle-outpost/routes/reach-terrain-1-2.yaml`. The precondition was
+the all-terrain-upgrades-owned window. The device upgrade sequence moved the
+first workshop from level 15 through level 25 with ten purchase taps; the
+level-25 screenshot showed `Max` and `收益x2`.
+
+The route then opened the 1-1 next-terrain entry, paid the observed 800-coin
+unlock, skipped the loading cinematic, confirmed `森林小道`, dismissed the
+five-diamond reward overlay, and stopped at the live `1-2` scene. Evidence
+was captured under `reports/t8-real-device-live/through-1-2-5038/` and
+`reports/t8-real-device-live/through-1-2-5037/`; these runtime reports remain
+ignored and are not part of the source commit.
+
+The route is a continuation route with `accountPolicy: preserve`. It does not
+delete the account and it does not automate the later `1-2` task
+`升级铁剑到5级`; that is the explicit boundary of this minimum closed loop.

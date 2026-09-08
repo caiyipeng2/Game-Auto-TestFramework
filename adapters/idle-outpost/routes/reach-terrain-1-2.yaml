@@ -1,0 +1,93 @@
+schemaVersion: 1
+id: reach-terrain-1-2
+adapter: idle-outpost
+profile: test-server-v63
+accountPolicy: preserve
+preconditions:
+  - context: account-ready
+  - context: logged-in
+steps:
+  - id: handle-terrain-1-2-checkpoint
+    branch:
+      condition:
+        state: terrain-1-2-main
+      then:
+        - id: assert-terrain-1-2-checkpoint
+          assert:
+            state: terrain-1-2-main
+            equals: terrain-1-2-main
+      else:
+        - id: wait-all-terrain-upgrades-owned
+          wait:
+            state: terrain-upgrade-all-owned
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: close-all-terrain-upgrades
+          tap:
+            target: terrain.upgrade.close
+        - id: open-first-device-upgrade
+          tap:
+            target: device.workshop.entry
+        - id: raise-first-device-to-level-25
+          repeat:
+            times: 10
+            steps:
+              - id: wait-device-upgrade-window
+                wait:
+                  state: equipment-upgrade-window
+                  timeoutMs: 30000
+                  pollIntervalMs: 250
+              - id: buy-one-device-level
+                tap:
+                  target: device.upgrade.purchase
+        - id: wait-device-level-25
+          wait:
+            state: device-upgrade-level-25
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: close-device-upgrade
+          tap:
+            target: device.upgrade.close
+        - id: open-next-terrain
+          tap:
+            target: main.terrain.next.entry
+        - id: wait-next-terrain-window
+          wait:
+            state: next-terrain-window
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: unlock-next-terrain
+          tap:
+            target: terrain.next.unlock
+        - id: wait-terrain-transition
+          wait:
+            state: terrain-transition-loading
+            timeoutMs: 30000
+            pollIntervalMs: 500
+        - id: skip-terrain-transition
+          tap:
+            target: terrain.transition.skip
+        - id: wait-new-terrain-position
+          wait:
+            state: terrain-1-2-new-position
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: confirm-new-terrain-position
+          tap:
+            target: terrain.next.confirm
+        - id: wait-terrain-reward
+          wait:
+            state: terrain-1-2-reward
+            timeoutMs: 30000
+            pollIntervalMs: 250
+        - id: close-terrain-reward
+          tap:
+            target: terrain.reward.dismiss
+        - id: wait-terrain-1-2-main
+          wait:
+            state: terrain-1-2-main
+            timeoutMs: 30000
+            pollIntervalMs: 250
+  - id: capture-terrain-1-2-checkpoint
+    screenshot:
+      name: terrain-1-2-final

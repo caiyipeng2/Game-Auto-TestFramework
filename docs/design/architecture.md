@@ -183,3 +183,24 @@ and must never hide a deterministic business assertion failure.
 - Route schemas are versioned and validated before execution.
 - Reports include core version, adapter version, route version, artifact hash,
   device serial, and tool versions.
+
+## Minimum closed loop example
+
+The current Idle_Outpost route is a data-driven continuation rather than a
+game-specific implementation in the runner:
+
+```text
+all upgrades owned
+  -> device level 25
+  -> next terrain dialog
+  -> 800-coin unlock
+  -> transition skip
+  -> 1-2 confirmation
+  -> reward dismiss
+  -> 1-2 main checkpoint
+```
+
+The adapter owns the screenshot states and normalized touch targets. The
+FlowRunner owns ordering, bounded repetition, state waits, branch selection,
+and per-step evidence. This same split can be reused for another game whose
+route has different states and targets.

@@ -92,10 +92,16 @@ not raw upgrade ID order. The third visible item in the current terrain is
 `UpgradeId=4` at 57 coins; `UpgradeId=3` at 320 coins remains the next item and
 is not clicked implicitly.
 
-The fourth visible continuation route is prepared at
-`adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml`; its
-real-device purchase remains an explicit authorization boundary because it
-consumes 320 coins.
+The fourth visible continuation route is
+`adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml`; it
+verified the remaining `UpgradeId=3` / 320-coin row on the Motorola device.
+
+The consolidated `adapters/idle-outpost/routes/reach-terrain-1-2.yaml` route
+continues from the all-upgrades-owned checkpoint, raises the first device to
+level 25, pays the observed 800-coin terrain unlock, confirms `1-2`, closes
+the five-diamond reward overlay, and stops at the `1-2` main scene. It uses
+`accountPolicy: preserve` and accepts an already reached `1-2` checkpoint
+without sending any tap.
 
 For real-device routes, the game adapter must provide an account detector. It
 opens the app first, skips the reset chain for a new account, and runs the
@@ -117,6 +123,15 @@ player route starts. See [Account State Reset](docs/architecture/account-state-r
 - [Account State Reset](docs/architecture/account-state-reset.md)
 - [Real Device Run](docs/architecture/real-device-run.md)
 - [Screen Recognition](docs/architecture/screen-recognition.md)
+- [Idle_Outpost 1-2 route](adapters/idle-outpost/routes/reach-terrain-1-2.yaml): the consolidated real-device continuation route.
 
 The interactive architecture browser is a later documentation-surface task;
 it must remain separate from the execution core.
+
+## Milestone commit rule
+
+Future gameplay automation work follows a sandbox-level acceptance boundary:
+complete and verify one sandbox level, then create one consolidated commit for
+that level. Intermediate upgrades, clicks, screenshots, and implementation
+steps within the same level are kept together and are not committed as
+separate milestones.

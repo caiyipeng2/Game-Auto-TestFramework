@@ -19,7 +19,8 @@ directly. The editable diagram sources are also kept in `docs/diagrams/`.
 - [Idle_Outpost terrain upgrade route](../../adapters/idle-outpost/routes/open-terrain-upgrade.yaml): the configuration-backed route that opens the first terrain upgrade window.
 - [Idle_Outpost second terrain upgrade](../../adapters/idle-outpost/routes/buy-second-terrain-upgrade.yaml): the preserved-session continuation route for `UpgradeId=2` and its terminal-state guard.
 - [Idle_Outpost third visible terrain upgrade](../../adapters/idle-outpost/routes/buy-third-visible-terrain-upgrade.yaml): the cost-ordered continuation route for `UpgradeId=4` and its terminal-state guard.
-- [Idle_Outpost fourth visible terrain upgrade](../../adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml): the guarded `UpgradeId=3` / 320-coin continuation route, pending explicit live purchase authorization.
+- [Idle_Outpost fourth visible terrain upgrade](../../adapters/idle-outpost/routes/buy-fourth-visible-terrain-upgrade.yaml): the verified `UpgradeId=3` / 320-coin continuation route.
+- [Idle_Outpost reach terrain 1-2](../../adapters/idle-outpost/routes/reach-terrain-1-2.yaml): the consolidated device-level, terrain-unlock, transition, reward, and `1-2` checkpoint route.
 - [Account state reset](account-state-reset.md): new/existing account detection and the destructive reset guard.
 - [Real device run](real-device-run.md): device selection, artifact, evidence, and current proof boundary.
 - [Screen recognition](screen-recognition.md): normalized PNG templates, thresholds, and fail-closed state detection.
@@ -31,3 +32,9 @@ commit its source diagram, explanatory document, and README index together
 with the code. A milestone is not considered repository-visible until the
 documentation is committed and pushed with the implementation after user
 confirmation.
+
+For gameplay routes, the milestone boundary is one verified sandbox level:
+finish and accept one level, then create one consolidated commit containing its
+route, adapter changes, evidence fixtures, tests, and process documentation.
+Do not create intermediate commits for individual purchases or level-up
+actions inside that level.

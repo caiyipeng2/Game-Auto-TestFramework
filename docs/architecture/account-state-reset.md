@@ -42,10 +42,11 @@ existing-account deletion chain. The default remains `reset-existing`, so a
 normal zero-state route still performs the explicit new/existing account
 decision above.
 
-The third visible terrain continuation also uses `preserve`; its terminal
-state is recognized as a new-account gameplay checkpoint, so a repeated run
-asserts completion without deleting the account or sending another upgrade
-tap.
+Verified terrain continuations use `preserve`; their terminal states are
+recognized as gameplay checkpoints, so a repeated run asserts completion
+without deleting the account or sending another upgrade tap. The consolidated
+1-2 route additionally branches on `terrain-1-2-main` before any continuation
+tap, which makes the current end boundary idempotent.
 
 ## Current implementation boundary
 
